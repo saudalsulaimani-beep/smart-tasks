@@ -5,6 +5,18 @@
 <title>مقياس — مهامي الذكية</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
+<meta name="description" content="تطبيق مهام يقسّم أهدافك اليومية والأسبوعية والشهرية والسنوية على وحدات أصغر تلقائيًا">
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F1F4F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#091412" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="مقياس">
 <script>
   document.documentElement.setAttribute("dir", "rtl");
   document.documentElement.setAttribute("lang", "ar");
@@ -408,6 +420,62 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
 .mini-goal b{display:block;font-family:var(--font-num);font-size:20px;font-weight:700;color:var(--tc);line-height:1.1;letter-spacing:-.03em}
 .mini-goal span{font-size:10px;color:var(--text-3)}
 
+/* ---- quick add: اكتب المهمة بالكلام ---- */
+.magic{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);
+  padding:16px 18px;box-shadow:var(--shadow-1);
+}
+.magic-top{display:flex;align-items:center;gap:8px;margin-bottom:11px}
+.magic-top b{font-family:var(--font-display);font-size:14px;font-weight:800}
+.magic-top .sp{color:var(--brass);display:flex}
+.magic-row{display:flex;gap:9px;align-items:stretch}
+.magic-row input{
+  flex:1;min-width:0;padding:12px 14px;border-radius:var(--r-md);
+  border:1px solid var(--line);background:var(--surface-2);font-size:14.5px;
+  transition:border-color .18s,background .18s;
+}
+.magic-row input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.magic-row input::placeholder{color:var(--text-3)}
+.magic-hints{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.magic-hints span{font-size:11px;color:var(--text-3);align-self:center}
+.ex{
+  font-size:11.5px;padding:4px 10px;border-radius:99px;
+  border:1px dashed var(--line-2);color:var(--text-2);background:transparent;
+  transition:all .16s;
+}
+.ex:hover{border-style:solid;border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+
+/* what the parser understood */
+.read{
+  border:1px solid var(--line);border-radius:var(--r-lg);
+  background:var(--surface-2);padding:14px 15px;
+}
+.read-t{
+  font-size:11.5px;font-weight:800;letter-spacing:.05em;color:var(--brass);
+  display:flex;align-items:center;gap:7px;margin-bottom:10px;
+}
+.read-grid{display:flex;flex-wrap:wrap;gap:7px}
+.rchip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;
+  background:var(--surface);border:1px solid var(--line);color:var(--text-2);
+}
+.rchip b{color:var(--text);font-family:var(--font-num);font-weight:700}
+.rchip.guess{border-style:dashed;color:var(--text-3)}
+.rchip.guess::after{content:"تخمين";font-size:9.5px;opacity:.7;font-weight:700}
+
+/* smart advice inside the form */
+.advice{
+  display:flex;align-items:flex-start;gap:10px;margin-top:11px;
+  padding:10px 12px;border-radius:var(--r-md);
+  background:var(--brass-soft);border:1px solid color-mix(in srgb,var(--brass) 35%,transparent);
+  font-size:12.5px;color:var(--text-2);line-height:1.6;
+}
+.advice button{
+  font-size:12px;font-weight:800;color:var(--brass);white-space:nowrap;
+  text-decoration:underline;text-underline-offset:3px;
+}
+
 .empty{
   text-align:center;padding:56px 24px;color:var(--text-3);
   border:1px dashed var(--line-2);border-radius:var(--r-xl);background:var(--surface-2);
@@ -618,6 +686,8 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
   .remain{padding-inline-start:0}
 }
 @media (max-width:560px){
+  .magic-row{flex-direction:column}
+  .magic-row .btn{justify-content:center}
   .trow{grid-template-columns:auto 1fr;row-gap:11px}
   .trow-right{grid-column:1/-1;justify-content:space-between}
   .cell{height:48px}
@@ -854,6 +924,231 @@ function distribute(total, weights, decimals) {
     prev = c;
   }
   return out;
+}
+
+/* ============================================================
+   5b. FEHM — فهم الجملة العربية بدون إنترنت
+   يحوّل «أبغى أخلص ١٠ محاضرات هالأسبوع ما عدا الجمعة»
+   إلى مهمة كاملة: مقدار + وحدة + فترة + تقسيم + أيام راحة.
+   ============================================================ */
+
+const AR_NUM = "٠١٢٣٤٥٦٧٨٩", FA_NUM = "۰۱۲۳۴۵۶۷۸۹";
+
+/* normalisation that remembers where every character came from,
+   so matched fragments can be cut out of the ORIGINAL text later */
+function normMap(src) {
+  let norm = "";
+  const map = [];
+  for (let i = 0; i < src.length; i++) {
+    const ch = src[i];
+    if (/[ً-ْٰـ]/.test(ch)) continue;      // حركات وتطويل
+    let o = ch;
+    const ai = AR_NUM.indexOf(ch), fi = FA_NUM.indexOf(ch);
+    if (ai >= 0) o = String(ai);
+    else if (fi >= 0) o = String(fi);
+    else if ("أإآٱ".includes(ch)) o = "ا";
+    else if (ch === "ى") o = "ي";
+    else if (ch === "ة") o = "ه";
+    else if (ch === "ؤ") o = "و";
+    else if (ch === "ئ") o = "ي";
+    else o = ch.toLowerCase();
+    norm += o;
+    map.push(i);
+  }
+  return { norm, map };
+}
+
+const NUM_WORDS = {
+  "نص":0.5,"نصف":0.5,
+  "واحده":1,"واحد":1,"وحده":1,
+  "اثنين":2,"اثنان":2,"ثنتين":2,"اتنين":2,
+  "ثلاثه":3,"ثلاث":3,"تلاته":3,"تلات":3,
+  "اربعه":4,"اربع":4,
+  "خمسه":5,"خمس":5,
+  "سته":6,"ست":6,
+  "سبعه":7,"سبع":7,
+  "ثمانيه":8,"ثمان":8,"تمانيه":8,"تمان":8,
+  "تسعه":9,"تسع":9,
+  "عشره":10,"عشر":10,
+  "عشرين":20,"ثلاثين":30,"اربعين":40,"خمسين":50,
+  "ستين":60,"سبعين":70,"ثمانين":80,"تسعين":90,
+  "مايه":100,"مئه":100,"ميه":100,"مايتين":200,"مئتين":200,"الف":1000
+};
+
+/* ترتيب الفحص مهم: «ربع سنه» تحتوي «سنه»، و«ثلاثه اشهر» تحتوي «شهر» */
+const PERIOD_PAT = [
+  ["half",      /(نصف? ?سنه|نص ?السنه|نصف سنوي|كل سته اشهر|كل 6 اشهر)/],
+  ["quarterly", /(ربع ?سنه|ربع سنوي|كل ثلاثه اشهر|كل 3 اشهر|هالربع|هذا الربع|كل ربع)/],
+  ["yearly",    /(كل سنه|سنويا|سنوي|بالسنه|في السنه|هالسنه|هذي السنه|هذه السنه|السنه)/],
+  ["monthly",   /(كل شهر|شهريا|شهري|بالشهر|في الشهر|هالشهر|هذا الشهر|الشهر)/],
+  ["weekly",    /(كل اسبوع|اسبوعيا|اسبوعي|بالاسبوع|في الاسبوع|هالاسبوع|هذا الاسبوع|الاسبوع)/],
+  ["daily",     /(كل يوم|يوميا|يومي|باليوم|في اليوم|هاليوم|اليوم)/]
+];
+const SPLIT_PAT = [
+  ["day",   /(علي ?الايام|عالايام|علي ايام|يوم بيوم)/],
+  ["week",  /(علي ?الاسابيع|عالاسابيع|علي اسابيع)/],
+  ["month", /(علي ?الاشهر|علي ?الشهور|عالاشهر)/]
+];
+/* حدود الكلمة إجبارية: \b في جافاسكربت لا تعمل مع العربية،
+   وبدونها تُطابَق «الا» داخل «بالاسبوع» فينهار التحليل كله. */
+const W0 = "(?:^|\\s)و?", W1 = "(?=\\s|$)";
+const dayRe = alts => new RegExp(W0 + "(?:" + alts + ")" + W1);
+const DAY_PAT = [
+  [0, dayRe("الاحد|احد")],        [1, dayRe("الاثنين|الاتنين|اثنين")],
+  [2, dayRe("الثلاثاء|الثلاثا")], [3, dayRe("الاربعاء|الاربعا")],
+  [4, dayRe("الخميس|خميس")],      [5, dayRe("الجمعه|جمعه")],
+  [6, dayRe("السبت|سبت")]
+];
+const EXCLUDE_PAT = new RegExp("(^|\\s)(ما ?عدا|ماعدا|عدا|الا|بدون|من غير|باستثناء)" + W1);
+const WEEKEND_PAT = /(نهايه الاسبوع|الويكند|ويكند|الاجازه|الاجازات)/;
+
+/* جمع → مفرد للوحدات الشائعة */
+const UNIT_FIX = {
+  "محاضرات":"محاضرة","محاضره":"محاضرة","صفحات":"صفحة","صفحه":"صفحة",
+  "اجزاء":"جزء","تمارين":"تمرين","دروس":"درس","حصص":"حصة","حصه":"حصة",
+  "ساعات":"ساعة","ساعه":"ساعة","دقائق":"دقيقة","دقايق":"دقيقة","دقيقه":"دقيقة",
+  "مرات":"مرة","مره":"مرة","ايات":"آية","ايه":"آية","احاديث":"حديث",
+  "اسئله":"سؤال","اسئلة":"سؤال","فيديوهات":"فيديو","كتب":"كتاب",
+  "كيلو":"كيلومتر","كيلومترات":"كيلومتر","خطوه":"خطوة","خطوات":"خطوة",
+  "مشاريع":"مشروع","مهام":"مهمة","مهمه":"مهمة","اوراق":"ورقة","ورقه":"ورقة",
+  "مقالات":"مقال","اكواب":"كوب","كاسات":"كوب","وجبات":"وجبة","وجبه":"وجبة",
+  "ملخصات":"ملخص","نماذج":"نموذج","اختبارات":"اختبار","محادثات":"محادثة",
+  "كلمات":"كلمة","كلمه":"كلمة","جمل":"جملة","جمله":"جملة","سور":"سورة","سوره":"سورة"
+};
+/* كلمات لا تصلح أن تكون وحدة (زمنية أو أدوات) */
+const NOT_UNIT = /^(يوم|ايام|اسبوع|اسابيع|شهر|اشهر|شهور|سنه|سنين|سنوات|ساعه?|في|من|علي|كل|هذا|هذه|هال|ال)$/;
+
+/* بالصيغة المطبّعة: «أبغى» تصير «ابغي» بعد توحيد الألف والياء */
+const INTENT_PAT = /^(ابغي|ابغا|ابي|اريد|ودي|بدي|خلني|لازم|يجب|عايز|محتاج|حاب|نفسي)\s+/;
+
+function fehm(raw) {
+  const src = raw || "";
+  const { norm, map } = normMap(src);
+  /* `work` هو النص المطبّع، ونفرّغ منه كل مقطع نستهلكه حتى لا يُطابَق مرتين.
+     الطول ثابت دائمًا فتبقى الفهارس صالحة للرجوع إلى النص الأصلي. */
+  let work = norm;
+  const cuts = [];                       // ما يُحذف من العنوان
+  const blank = (a, b) => { work = work.slice(0, a) + " ".repeat(b - a) + work.slice(b); };
+  const take = (a, b) => { cuts.push([a, b]); blank(a, b); };
+  const orig = (a, b) => src.slice(map[a], (b - 1 < map.length ? map[b - 1] : map[map.length - 1]) + 1);
+
+  /* 1 — أيام الراحة أولًا: «عدا نهاية الأسبوع» تحتوي كلمة «الأسبوع»،
+         فلو فحصنا الفترة قبلها لقرأناها مهمة أسبوعية بالخطأ. */
+  let rest = [];
+  const ex = work.match(EXCLUDE_PAT);
+  if (ex) {
+    const exStart = ex.index + ex[1].length;      // بعد المسافة الفاصلة
+    const tailStart = ex.index + ex[0].length;
+    const tail = work.slice(tailStart);
+    let far = 0;
+    const wk = tail.match(WEEKEND_PAT);
+    if (wk) {
+      rest = [5, 6];
+      far = wk.index + wk[0].length;
+    } else {
+      DAY_PAT.forEach(([d, re]) => {
+        const m = tail.match(re);
+        if (m) { rest.push(d); far = Math.max(far, m.index + m[0].length); }
+      });
+    }
+    if (rest.length) {
+      rest = [...new Set(rest)].sort((a, b) => a - b);
+      take(exStart, tailStart + far);
+    }
+  }
+
+  /* 2 — الفترة */
+  let period = null;
+  for (const [p, re] of PERIOD_PAT) {
+    const m = work.match(re);
+    if (m) { period = p; take(m.index, m.index + m[0].length); break; }
+  }
+
+  /* 3 — التقسيم الصريح */
+  let split = null;
+  for (const [s, re] of SPLIT_PAT) {
+    const m = work.match(re);
+    if (m) { split = s; take(m.index, m.index + m[0].length); break; }
+  }
+
+  /* 4 — المقدار والوحدة.
+         يبقيان في العنوان: «أخلص ١٠ محاضرات» اسم أوضح من «أخلص». */
+  let target = null, unit = null, explicitNum = false;
+  let numEnd = null;
+  const dm = work.match(/(\d+(?:[.,]\d+)?)/);
+  if (dm) {
+    target = parseFloat(dm[1].replace(",", "."));
+    explicitNum = true;
+    numEnd = dm.index + dm[1].length;
+    blank(dm.index, numEnd);
+  } else {
+    for (const w of Object.keys(NUM_WORDS)) {
+      const mm = work.match(new RegExp("(^|\\s)" + w + "(\\s|$)"));
+      if (mm) {
+        target = NUM_WORDS[w];
+        explicitNum = true;
+        const s = mm.index + mm[1].length;
+        numEnd = s + w.length;
+        blank(s, numEnd);
+        break;
+      }
+    }
+  }
+  if (numEnd != null) {
+    const after = work.slice(numEnd).match(/^\s+([؀-ۿ]+)/);
+    if (after && !NOT_UNIT.test(after[1])) {
+      const s = numEnd + after[0].length - after[1].length;
+      /* الشكل المطبّع للبحث في جدول الجموع، والأصلي للعرض (يحفظ الهمزات) */
+      unit = UNIT_FIX[after[1]] || orig(s, s + after[1].length);
+      blank(s, s + after[1].length);
+    }
+  }
+
+  /* 5 — العنوان = النص الأصلي بعد حذف المقاطع الوظيفية */
+  let title = src;
+  cuts.filter(([a, b]) => b > a && a < map.length)
+      .map(([a, b]) => [map[a], (b - 1 < map.length ? map[b - 1] : map[map.length - 1]) + 1])
+      .sort((x, y) => y[0] - x[0])
+      .forEach(([a, b]) => { title = title.slice(0, a) + " " + title.slice(b); });
+  title = title.replace(/[\s،,.:؛-]+/g, " ").trim();
+  /* نزع كلمة النية من البداية — بمطابقة مطبّعة حتى تعمل مع «أبغى» و«ابغى» */
+  const tm = normMap(title).norm.match(INTENT_PAT);
+  if (tm) title = title.slice(normMap(title).map[tm[0].length - 1] + 1).trim();
+  title = title.replace(/\s{2,}/g, " ").trim();
+
+  /* 6 — الافتراضات الذكية لما لا يصرّح المستخدم */
+  const guessedPeriod = !period;
+  if (!period) period = explicitNum && target > 1 ? "weekly" : "daily";
+  /* «٣ ساعات كل يوم عدا نهاية الأسبوع» لا تُمثَّل كمهمة يومية — كل يوم فيها
+     فترة مستقلة لا تعرف أيام الراحة. تحويلها إلى أسبوعية مقسّمة على الأيام
+     يعطي النتيجة نفسها بالضبط: ٣ × ٥ أيام = ١٥ أسبوعيًا. */
+  let converted = false;
+  if (period === "daily" && rest.length && rest.length < 7) {
+    period = "weekly";
+    target = round2((target == null ? 1 : target) * (7 - rest.length));
+    converted = true;
+  }
+
+  const allowed = PERIODS[period].splits;
+  if (!split || !allowed.includes(split)) {
+    split = period === "daily" ? "none"
+          : period === "weekly" ? "day"
+          : period === "monthly" ? "day"
+          : period === "quarterly" ? "week" : "month";
+    if (!allowed.includes(split)) split = allowed[0];
+  }
+  if (split !== "day") rest = [];
+  if (target == null) target = 1;
+  const noUnit = !unit;
+  if (!unit) unit = target === 1 ? "مرة" : "وحدة";
+  if (!title) title = "مهمة جديدة";
+
+  return {
+    title, unit, target, period, split, rest,
+    guessedPeriod, converted,
+    guessedUnit: noUnit,
+    guessedTarget: !explicitNum
+  };
 }
 
 /* Enumerate leaf slots of a period at a granularity. */
@@ -1213,6 +1508,50 @@ function meter(c, slots, opts) {
 /* ============================================================
    8. VIEWS
    ============================================================ */
+const EXAMPLES = [
+  "أخلص ١٠ محاضرات هذا الأسبوع ما عدا الجمعة",
+  "أقرأ 240 صفحة هذا الشهر",
+  "أراجع 30 جزء هذا الربع على الأسابيع",
+  "أمشي 5 كيلو كل يوم"
+];
+
+function magicBar() {
+  return `
+  <div class="magic">
+    <div class="magic-top">
+      <span class="sp">${icon("spark", 15)}</span>
+      <b>اكتب مهمتك بكلامك العادي</b>
+    </div>
+    <div class="magic-row">
+      <input id="magicIn" placeholder="مثال: أبغى أخلص ١٠ محاضرات هالأسبوع ما عدا الجمعة"
+             autocomplete="off" enterkeyhint="go" aria-label="اكتب المهمة بلغة عادية">
+      <button class="btn btn-primary" data-act="magic">افهمها</button>
+    </div>
+    <div class="magic-hints">
+      <span>جرّب:</span>
+      ${EXAMPLES.map((x, i) => `<button class="ex" data-act="ex" data-i="${i}">${esc(x)}</button>`).join("")}
+    </div>
+  </div>`;
+}
+
+/* بطاقة «هذا ما فهمته» داخل نموذج المهمة */
+function readCard(r) {
+  if (!r) return "";
+  const chips = [
+    `<span class="rchip ${r.guessedTarget ? "guess" : ""}">المقدار <b>${fmt(r.target)}</b> ${esc(r.unit)}</span>`,
+    `<span class="rchip ${r.guessedPeriod ? "guess" : ""}">${PERIODS[r.period].label}</span>`,
+    `<span class="rchip">${SPLITS[r.split].label}</span>`
+  ];
+  if (r.rest.length) chips.push(`<span class="rchip">راحة: ${r.rest.map(d => DAY_FULL[d]).join("، ")}</span>`);
+  return `<div class="read">
+    <div class="read-t">${icon("spark", 13)} هذا ما فهمته — عدّل أي شيء قبل الحفظ</div>
+    <div class="read-grid">${chips.join("")}</div>
+    ${r.converted ? `<div class="note" style="margin-top:9px">
+      حوّلتها إلى مهمة أسبوعية لأن أيام الراحة لا تُستثنى من مهمة يومية —
+      والنتيجة واحدة: نفس الحصة في كل يوم عمل.</div>` : ""}
+  </div>`;
+}
+
 function renderToday() {
   const board = todayBoard();
   const t = today();
@@ -1243,8 +1582,9 @@ function renderToday() {
   </div>`;
 
   if (!board.length) {
-    return strip + `<div class="empty"><h3>لا شيء مجدول اليوم</h3>
-      <p>أضف مهمة وحدّد فترتها — وسييتولى «مقياس» تقسيمها عليك حتى تصل إلى نصيب اليوم.</p></div>`;
+    return magicBar() + `<div class="empty"><h3>لا مهام بعد</h3>
+      <p>اكتب مهمتك بالأعلى بلغتك العادية — يفهم «مقياس» المقدار والفترة وأيام الراحة،
+         ويقسّمها عليك حتى يوصل لنصيب اليوم.</p></div>`;
   }
 
   const rows = board.map(b => {
@@ -1279,7 +1619,7 @@ function renderToday() {
     </div>`;
   }).join("");
 
-  return strip + `
+  return magicBar() + strip + `
     <div class="section-head"><h2>نصيب اليوم</h2>
       <span class="hint">${DAY_FULL[t.getDay()]} — ما يلزمك فعله الآن، محسوبًا من كل فترة</span>
       <span class="line"></span></div>
@@ -1500,13 +1840,21 @@ function renderStats() {
    ============================================================ */
 let draft = null;
 
-function openForm(taskId) {
+function openForm(taskId, parsed) {
   const ex = taskId ? S.tasks.find(t => t.id === taskId) : null;
   draft = ex ? JSON.parse(JSON.stringify(ex)) : {
-    id: uid(), title: "", unit: "محاضرة", target: 10,
-    period: "weekly", split: "day", rest: [], catchup: true,
-    color: "teal", created: key(today()), archived: false
+    id: uid(), title: "", unit: "مرة", target: 1,
+    period: "daily", split: "none", rest: [], catchup: true,
+    color: COLORS[S.tasks.length % COLORS.length].id,
+    created: key(today()), archived: false
   };
+  if (parsed) {
+    Object.assign(draft, {
+      title: parsed.title, unit: parsed.unit, target: parsed.target,
+      period: parsed.period, split: parsed.split, rest: parsed.rest
+    });
+    draft._read = parsed;
+  }
   draft._editing = !!ex;
   paintForm();
 }
@@ -1530,8 +1878,32 @@ function previewInner(d) {
         <b>${open.length}</b> ${SPLITS[d.split].unitLabel} ≈
         <b>${fmt(per)}</b> ${unit} ${SPLITS[d.split].each}
         ${d.rest.length && d.split === "day" ? ` — باستثناء ${d.rest.map(i => DAY_FULL[i]).join(" و")}` : ""}
-      </div>`
+      </div>
+      ${splitAdvice(d, per)}`
     : `<p class="preview-sum">لا توجد وحدات متاحة — راجع أيام الراحة.</p>`}`;
+}
+
+/* ينبّه حين يكون التقسيم المختار أدقّ من اللازم أو أخشن من اللازم */
+function splitAdvice(d, per) {
+  const allowed = PERIODS[d.period].splits;
+  const coarser = { day: "week", week: "month" }[d.split];
+  const finer   = { week: "day", month: "week" }[d.split];
+
+  if (per > 0 && per < 0.6 && coarser && allowed.includes(coarser)) {
+    return `<div class="advice">
+      <span>الحصة أقل من وحدة واحدة (${fmt(per)}) — رقم صعب تتابعه.
+        الأنسب التقسيم ${SPLITS[coarser].label}.</span>
+      <button data-f="split" data-v="${coarser}">حوّلها</button>
+    </div>`;
+  }
+  if (per >= 25 && finer && allowed.includes(finer)) {
+    return `<div class="advice">
+      <span>الحصة كبيرة (${fmt(per)} ${esc(d.unit || "وحدة")} ${SPLITS[d.split].each}) —
+        التقسيم ${SPLITS[finer].label} يعطيك هدفًا يوميًا أوضح.</span>
+      <button data-f="split" data-v="${finer}">حوّلها</button>
+    </div>`;
+  }
+  return "";
 }
 
 function paintForm() {
@@ -1562,6 +1934,7 @@ function paintForm() {
         <button class="icon-btn" data-act="closeform" aria-label="إغلاق">${icon("close", 16)}</button>
       </div>
       <div class="modal-body">
+        ${readCard(d._read)}
         <div class="field">
           <label for="f-title">اسم المهمة</label>
           <input class="inp" id="f-title" data-f="title" value="${esc(d.title)}" placeholder="مثال: إنهاء محاضرات مادة الإحصاء" autocomplete="off">
@@ -1757,6 +2130,20 @@ document.addEventListener("click", e => {
 
   switch (act) {
     case "nav":       view = el.dataset.v; render(); window.scrollTo({ top: 0, behavior: "smooth" }); break;
+    case "ex": {
+      const box = document.getElementById("magicIn");
+      if (box) { box.value = EXAMPLES[+el.dataset.i]; box.focus(); }
+      break;
+    }
+    case "magic": {
+      const box = document.getElementById("magicIn");
+      const text = box ? box.value.trim() : "";
+      if (!text) { if (box) box.focus(); break; }
+      const r = fehm(text);
+      if (box) box.value = "";
+      openForm(null, r);
+      break;
+    }
     case "inc":       stepTask(id, +1); break;
     case "dec":       stepTask(id, -1); break;
     case "toggle": {
@@ -1840,6 +2227,11 @@ document.addEventListener("input", e => {
 });
 
 document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.id === "magicIn") {
+    e.preventDefault();
+    document.querySelector('[data-act="magic"]').click();
+    return;
+  }
   if (e.key === "Escape" && draft) closeForm();
   if (e.key === "Enter" && draft && e.target.tagName === "INPUT" && e.target.type !== "checkbox") { e.preventDefault(); saveForm(); }
 });
@@ -1880,42 +2272,27 @@ document.getElementById("fileInput").onchange = ev => {
 matchMedia("(prefers-color-scheme:dark)").addEventListener("change", applyTheme);
 
 /* ============================================================
-   12. SEED + BOOT
+   12. BOOT
    ============================================================ */
-if (!S.tasks) {
-  const t = today(), born = key(addDays(t, -45));
-  S.tasks = [
-    { id:"seed1", title:"إنهاء محاضرات مادة الإحصاء", unit:"محاضرة", target:10,
-      period:"weekly", split:"day", rest:[5], catchup:true, color:"teal", created:born, archived:false },
-    { id:"seed2", title:"قراءة كتاب «العادات الذرية»", unit:"صفحة", target:240,
-      period:"monthly", split:"day", rest:[], catchup:true, color:"ocean", created:born, archived:false },
-    { id:"seed3", title:"مراجعة المصحف", unit:"جزء", target:30,
-      period:"quarterly", split:"week", rest:[], catchup:true, color:"olive", created:born, archived:false },
-    { id:"seed4", title:"تمرين رياضي", unit:"مرة", target:1,
-      period:"daily", split:"none", rest:[], catchup:true, color:"clay", created:born, archived:false }
-  ];
-  S.progress = {};
+if (!S.tasks) S.tasks = [];
 
-  /* fill every finished slot since `born` at plan, so the app opens with real history */
-  S.tasks.forEach(task => {
-    const seen = {};
-    const store = S.progress[task.id] = {};
-    for (let d = parseKey(born); d <= t; d = addDays(d, 1)) {
-      const pk = periodKey(task.period, d);
-      if (seen[pk]) continue;
-      seen[pk] = 1;
-      const inst = store[pk] = store[pk] || {};
-      compute_(task, d).slots.forEach(s => { if (!s.rest && s.end < t && s.plan > 0) inst[s.k] = s.plan; });
-    }
-  });
-
-  /* leave one recent gap on the weekly task — that's the redistribution in action */
-  const wk = S.progress.seed1[periodKey("weekly", t)] || {};
-  const gap = Object.keys(wk).sort().pop();
-  if (gap) wk[gap] = 0;
-
+/* المهام التجريبية القديمة تُحذف مرة واحدة، دون المساس بما أضافه المستخدم */
+if (!S.settings.demoCleared) {
+  const before = S.tasks.length;
+  S.tasks = S.tasks.filter(t => !/^seed\d+$/.test(t.id));
+  Object.keys(S.progress).forEach(id => { if (/^seed\d+$/.test(id)) delete S.progress[id]; });
+  S.settings.demoCleared = true;
   save();
+  if (before !== S.tasks.length) setTimeout(() => toast("حُذفت المهام التجريبية — ابدأ بمهامك"), 400);
 }
+
+/* يعمل بدون إنترنت بعد أول فتح */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+
 applyTheme();
 calSel = today();
 render();
