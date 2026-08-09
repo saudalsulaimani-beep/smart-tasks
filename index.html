@@ -259,18 +259,6 @@ button{cursor:pointer;background:none;border:0;padding:0}
 }
 .stack{display:flex;flex-direction:column;gap:14px}
 
-/* task card */
-.task{--tc:var(--c-teal)}
-.task-head{display:flex;align-items:flex-start;gap:14px;padding:18px 20px 14px}
-.task-dot{
-  width:10px;height:10px;border-radius:50%;background:var(--tc);
-  margin-top:8px;flex:none;
-  box-shadow:0 0 0 4px var(--surface-3);
-  box-shadow:0 0 0 4px color-mix(in srgb,var(--tc) 16%,transparent);
-}
-.task-id{min-width:0;flex:1}
-.task-title{font-family:var(--font-display);font-weight:800;font-size:16.5px;letter-spacing:-.015em}
-.task-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
 .tag{
   font-size:11px;font-weight:600;letter-spacing:.01em;
   padding:2.5px 9px;border-radius:99px;
@@ -282,17 +270,6 @@ button{cursor:pointer;background:none;border:0;padding:0}
 .tag.warn{background:var(--brass-soft);color:var(--brass)}
 .tag.bad{background:var(--bad-soft);color:var(--bad)}
 .tag.ok{background:var(--ok-soft);color:var(--ok)}
-
-/* the headline remaining counter */
-.remain{text-align:center;flex:none;padding-inline-start:8px}
-.remain-n{
-  font-family:var(--font-num);font-weight:700;
-  font-size:38px;line-height:1;letter-spacing:-.045em;
-  color:var(--tc);display:block;
-}
-.remain-n.done{color:var(--ok)}
-.remain-cap{font-size:10.5px;color:var(--text-3);margin-top:5px;white-space:nowrap}
-.remain-cap b{color:var(--text-2);font-weight:600}
 
 /* progress bar */
 .bar{height:6px;border-radius:99px;background:var(--surface-3);overflow:hidden;position:relative}
@@ -306,12 +283,6 @@ button{cursor:pointer;background:none;border:0;padding:0}
 /* ============================================================
    DISTRIBUTION METER  — the signature element
    ============================================================ */
-.dist-block{padding:4px 20px 18px}
-.dist-legend{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  font-size:11.5px;color:var(--text-3);margin-bottom:10px;
-}
-.dist-legend .sep{width:1px;height:11px;background:var(--line)}
 .dist{
   display:grid;gap:5px;align-items:end;
   grid-auto-rows:auto;
@@ -364,11 +335,6 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
 .grp-name{font-size:12.5px;font-weight:700;color:var(--text-2)}
 .grp-sub{font-size:11px;color:var(--text-3);font-family:var(--font-num)}
 
-/* task footer / actions */
-.task-foot{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  padding:13px 20px;border-top:1px solid var(--line);background:var(--surface-2);
-}
 .step{
   display:inline-flex;align-items:center;border:1px solid var(--line);
   border-radius:var(--r-md);overflow:hidden;background:var(--surface);
@@ -391,59 +357,42 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
 /* ============================================================
    TODAY VIEW
    ============================================================ */
-.today-grid{display:grid;gap:14px}
-.trow{
-  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
-  padding:15px 18px;background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-lg);box-shadow:var(--shadow-1);
-  transition:border-color .2s, box-shadow .2s;
-  --tc:var(--c-teal);
-}
-.trow:hover{border-color:var(--line-2);box-shadow:var(--shadow-2)}
-.trow.complete{background:var(--surface-2)}
-.trow.complete .trow-title{text-decoration:line-through;text-decoration-color:var(--text-3);color:var(--text-3)}
 .check{
   width:30px;height:30px;border-radius:10px;border:2px solid var(--line-2);
   display:grid;place-items:center;color:transparent;flex:none;
   transition:background .2s,border-color .2s,color .2s,transform .15s;
 }
 .check:hover{border-color:var(--tc);transform:scale(1.06)}
-.trow.complete .check{background:var(--ok);border-color:var(--ok);color:#fff}
 /* nothing scheduled today is not the same as finished */
-.trow.idle .trow-title{text-decoration:none;color:var(--text-3)}
-.trow.idle .check{background:var(--surface-3);border-color:var(--line);color:var(--text-3)}
-.trow-title{font-weight:700;font-size:15px}
-.trow-meta{font-size:12px;color:var(--text-3);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.trow-meta .num{color:var(--text-2);font-weight:700}
-.trow-right{display:flex;align-items:center;gap:10px}
-.mini-goal{text-align:center;min-width:62px}
-.mini-goal b{display:block;font-family:var(--font-num);font-size:20px;font-weight:700;color:var(--tc);line-height:1.1;letter-spacing:-.03em}
-.mini-goal span{font-size:10px;color:var(--text-3)}
+/* ---- add bar: سطر واحد، لا بطاقة ولا أمثلة معروضة ---- */
+.addbar{position:relative}
+.addbar svg{
+  position:absolute;inset-inline-start:15px;top:15px;
+  color:var(--text-3);pointer-events:none;
+}
+.addbar input{
+  width:100%;padding:14px 18px;padding-inline-start:44px;
+  border-radius:var(--r-lg);border:1px solid var(--line);
+  background:var(--surface);font-size:14.5px;box-shadow:var(--shadow-1);
+  transition:border-color .18s, box-shadow .18s;
+}
+.addbar input:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-soft), var(--shadow-1);
+}
+.addbar input::placeholder{color:var(--text-3)}
+.addhint{font-size:11.5px;color:var(--text-3);margin-top:9px;padding-inline-start:4px}
 
-/* ---- quick add: اكتب المهمة بالكلام ---- */
-.magic{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);
-  padding:16px 18px;box-shadow:var(--shadow-1);
+/* سطر ملخّص هادئ بدل أربع بطاقات أرقام */
+.sumline{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 20px;
+  font-size:13px;color:var(--text-3);padding:2px 4px;
 }
-.magic-top{display:flex;align-items:center;gap:8px;margin-bottom:11px}
-.magic-top b{font-family:var(--font-display);font-size:14px;font-weight:800}
-.magic-top .sp{color:var(--brass);display:flex}
-.magic-row{display:flex;gap:9px;align-items:stretch}
-.magic-row input{
-  flex:1;min-width:0;padding:12px 14px;border-radius:var(--r-md);
-  border:1px solid var(--line);background:var(--surface-2);font-size:14.5px;
-  transition:border-color .18s,background .18s;
+.sumline i{font-style:normal}
+.sumline b{
+  font-family:var(--font-num);color:var(--text);font-weight:700;
+  font-size:16px;letter-spacing:-.02em;margin-inline-end:4px;
 }
-.magic-row input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
-.magic-row input::placeholder{color:var(--text-3)}
-.magic-hints{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
-.magic-hints span{font-size:11px;color:var(--text-3);align-self:center}
-.ex{
-  font-size:11.5px;padding:4px 10px;border-radius:99px;
-  border:1px dashed var(--line-2);color:var(--text-2);background:transparent;
-  transition:all .16s;
-}
-.ex:hover{border-style:solid;border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 
 /* what the parser understood */
 .read{
@@ -490,58 +439,57 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
   position:relative;display:flex;flex-direction:column;min-width:0;
   background:var(--surface);border:1px solid var(--line);
   border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-1);
-  transition:border-color .2s, box-shadow .25s, transform .18s;
+  transition:border-color .2s, box-shadow .25s;
 }
-.tcard::before{
-  content:"";position:absolute;top:0;inset-inline:0;height:3px;
-  background:var(--tc);
-}
-.tcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);border-color:var(--line-2)}
-.tcard.done::before{background:var(--ok)}
-.tcard.idle{opacity:.66}
-.tcard.idle:hover{transform:none}
+.tcard:hover{box-shadow:var(--shadow-2);border-color:var(--line-2)}
+.tcard.idle{opacity:.55}
 
-.tc-head{display:flex;align-items:flex-start;gap:11px;padding:18px 18px 0}
+.tc-top{display:flex;align-items:flex-start;gap:13px;padding:20px 20px 0}
+.tc-id{flex:1;min-width:0}
 .tc-title{
-  font-family:var(--font-display);font-weight:800;font-size:15.5px;
-  line-height:1.45;flex:1;min-width:0;letter-spacing:-.012em;
+  font-family:var(--font-display);font-weight:800;font-size:16px;
+  line-height:1.4;letter-spacing:-.015em;
 }
 .tcard.done .tc-title{color:var(--text-3)}
-.tc-tags{display:flex;flex-wrap:wrap;gap:6px;padding:11px 18px 0}
+.tc-sub{font-size:12px;color:var(--text-3);margin-top:5px;line-height:1.6}
+.tc-sub b{color:var(--text-2);font-family:var(--font-num);font-weight:700}
 
-.tc-figure{
+/* الرقم الأساسي والمُدخل في سطر واحد */
+.tc-act{
   display:flex;align-items:flex-end;justify-content:space-between;
-  gap:12px;padding:15px 18px 0;
+  gap:14px;padding:18px 20px 20px;
 }
-.tc-big{display:flex;align-items:baseline;gap:7px;min-width:0}
+.tc-big{display:flex;align-items:baseline;gap:8px;min-width:0}
 .tc-big b{
-  font-family:var(--font-num);font-size:36px;font-weight:700;
-  letter-spacing:-.05em;color:var(--tc);line-height:.95;
+  font-family:var(--font-num);font-size:38px;font-weight:700;
+  letter-spacing:-.05em;color:var(--tc);line-height:.9;
 }
 .tc-big.ok b{color:var(--ok)}
-.tc-big i{font-style:normal;font-size:12.5px;color:var(--text-3);line-height:1.3}
-.tc-side{text-align:end;font-size:11px;color:var(--text-3);line-height:1.5;max-width:47%}
-.tc-side b{display:block;font-family:var(--font-num);font-size:14px;color:var(--text-2);font-weight:700}
+.tc-big i{font-style:normal;font-size:12px;color:var(--text-3);line-height:1.35}
 
-.tc-bar{padding:13px 18px 0}
-.tc-note{padding:9px 18px 0;font-size:11.5px;color:var(--text-3);line-height:1.55}
-.tc-meter{padding:15px 18px 2px}
-.tc-foot{
-  margin-top:auto;display:flex;align-items:center;gap:9px;flex-wrap:wrap;
-  padding:14px 18px;margin-top:16px;
-  border-top:1px solid var(--line);background:var(--surface-2);
+.tc-meter{padding:0 20px 20px}
+.tc-links{display:flex;gap:2px;align-items:center;flex:none}
+.ibtn{
+  width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  color:var(--text-3);transition:background .16s,color .16s;
 }
-.tc-foot .step{background:var(--surface)}
+.ibtn:hover{background:var(--surface-3);color:var(--text)}
+.ibtn.danger:hover{background:var(--bad-soft);color:var(--bad)}
+
+/* شريط التقدم على حافة البطاقة السفلى: خط واحد يحمل اللون والحالة معًا */
+.tc-prog{margin-top:auto;height:4px;background:var(--surface-3)}
+.tc-prog i{display:block;height:100%;background:var(--tc);transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.tcard.done .tc-prog i{background:var(--ok)}
 
 .disclose{
   width:100%;display:flex;align-items:center;justify-content:center;gap:7px;
-  padding:9px;font-size:12px;font-weight:700;color:var(--text-3);
-  border-top:1px dashed var(--line);transition:color .18s,background .18s;
+  padding:11px;font-size:12px;font-weight:700;color:var(--text-3);
+  border-top:1px solid var(--line);transition:color .18s,background .18s;
 }
 .disclose:hover{color:var(--accent);background:var(--surface-2)}
 .disclose svg{transition:transform .25s}
 .disclose[aria-expanded="true"] svg{transform:rotate(180deg)}
-.tc-detail{padding:14px 18px 4px;border-top:1px solid var(--line);background:var(--surface-2)}
+.tc-detail{padding:16px 20px 6px;border-top:1px solid var(--line);background:var(--surface-2)}
 
 /* ============================================================
    REFLECTION — تأمل مبني على أرقام اليوم
@@ -551,12 +499,16 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
   border-radius:var(--r-xl);box-shadow:var(--shadow-1);overflow:hidden;
 }
 .refl-head{
-  display:flex;align-items:center;gap:12px;padding:16px 20px;
-  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:13px;padding:16px 20px;width:100%;
+  text-align:start;transition:background .18s;
 }
-.refl-head h3{font-size:15.5px;flex:1}
+button.refl-head:hover{background:var(--surface-2)}
+.refl-head h3{font-size:15px;flex:1}
 .refl-head .sub{font-size:11.5px;color:var(--text-3);font-weight:500;display:block;margin-top:3px}
-.refl-body{padding:18px 20px;display:flex;flex-direction:column;gap:18px}
+.refl-head .chev{transition:transform .25s;color:var(--text-3)}
+.refl-head[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.refl-body{padding:4px 20px 20px;display:flex;flex-direction:column;gap:18px;
+  border-top:1px solid var(--line);padding-top:18px}
 
 /* the day's facts, so reflection isn't guesswork */
 .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
@@ -1615,6 +1567,7 @@ function icon(name, size) {
     spark:'<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.2"/>',
     close:'<path d="M18 6 6 18M6 6l12 12"/>',
     edit:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+    trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/>',
     flame:'<path d="M12 22c4 0 6.5-2.6 6.5-6 0-4.5-4.5-6-4.5-10C10.5 8 9 9.5 9 12c0 1-1 1.5-1.5 1-1 2-2 3-2 4 0 3.4 2.5 5 6.5 5z"/>'
   }[name] || "";
   const s = size || 18;
@@ -1660,29 +1613,23 @@ function meter(c, slots, opts) {
 /* ============================================================
    8. VIEWS
    ============================================================ */
-const EXAMPLES = [
-  "أخلص ١٠ محاضرات هذا الأسبوع ما عدا الجمعة",
-  "أقرأ 240 صفحة هذا الشهر",
-  "أراجع 30 جزء هذا الربع على الأسابيع",
-  "أمشي 5 كيلو كل يوم"
-];
+function runMagic() {
+  const box = document.getElementById("magicIn");
+  const text = box ? box.value.trim() : "";
+  if (!text) { if (box) box.focus(); return; }
+  box.value = "";
+  openForm(null, fehm(text));
+}
 
-function magicBar() {
+function magicBar(hint) {
   return `
-  <div class="magic">
-    <div class="magic-top">
-      <span class="sp">${icon("spark", 15)}</span>
-      <b>اكتب مهمتك بكلامك العادي</b>
-    </div>
-    <div class="magic-row">
-      <input id="magicIn" placeholder="مثال: أبغى أخلص ١٠ محاضرات هالأسبوع ما عدا الجمعة"
+  <div>
+    <div class="addbar">
+      ${icon("spark", 16)}
+      <input id="magicIn" placeholder="اكتب مهمة بكلامك… ١٠ محاضرات هالأسبوع عدا الجمعة"
              autocomplete="off" enterkeyhint="go" aria-label="اكتب المهمة بلغة عادية">
-      <button class="btn btn-primary" data-act="magic">افهمها</button>
     </div>
-    <div class="magic-hints">
-      <span>جرّب:</span>
-      ${EXAMPLES.map((x, i) => `<button class="ex" data-act="ex" data-i="${i}">${esc(x)}</button>`).join("")}
-    </div>
+    ${hint ? `<div class="addhint">اكتب الجملة واضغط Enter — يستخرج المقدار والفترة وأيام الراحة.</div>` : ""}
   </div>`;
 }
 
@@ -1712,6 +1659,7 @@ const BLOCKERS = ["ضيق الوقت", "تشتت", "إرهاق", "تسويف", "
 const ENERGY = ["منخفضة جدًا", "منخفضة", "متوسطة", "عالية", "ممتازة"];
 
 let reflDraft = null;      // مسودة اليوم قبل الحفظ
+let reflOpen = false;      // مطوي افتراضيًا
 
 /* الحالة الحالية: المسودة، وإلا المحفوظ، وإلا فارغ */
 function reflCurrent() {
@@ -1772,19 +1720,25 @@ function renderReflect() {
       </div>
     </div>`;
 
+  const sub = saved
+    ? `طاقة ${ENERGY[saved.energy - 1] || "—"}${saved.blocks.length ? ` · ${saved.blocks.join("، ")}` : ""}`
+    : "دقيقة واحدة — تتحول إلى أنماط في «الإحصاءات»";
+
   return `
-  <div class="section-head" style="margin-top:8px"><h2>تأمل اليوم</h2>
-    <span class="hint">دقيقة واحدة — تتحول لاحقًا إلى أنماط في «الإحصاءات»</span>
-    <span class="line"></span></div>
   <div class="refl">
-    <div class="refl-head">
-      ${icon("spark", 17)}
-      <div style="flex:1">
-        <h3>${DAY_FULL[today().getDay()]} ${ltr(today().getDate())} ${MONTHS[today().getMonth()]}</h3>
-        <span class="sub">${saved ? "محفوظ — تقدر تعدّله" : "سجّل يومك وأنت تشوف أرقامه"}</span>
-      </div>
-      ${saved ? `<button class="link-btn danger" data-act="reflDel">حذف</button>` : ""}
-    </div>
+    <button class="refl-head" data-act="reflToggle" aria-expanded="${reflOpen}">
+      <span style="color:${saved ? "var(--ok)" : "var(--brass)"};display:flex">
+        ${icon(saved ? "check" : "spark", 17)}</span>
+      <span style="flex:1">
+        <h3>تأمل اليوم</h3>
+        <span class="sub">${esc(sub)}</span>
+      </span>
+      <span class="chev">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </button>
+    ${!reflOpen ? "" : `
     <div class="refl-body">
       ${facts}
       ${energy}
@@ -1801,11 +1755,12 @@ function renderReflect() {
             placeholder="تغيير واحد قابل للتنفيذ">${esc(d.fix)}</textarea>
         </div>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <button class="btn btn-primary" data-act="reflSave">${saved ? "تحديث" : "احفظ التأمل"}</button>
-        ${saved ? `<span class="saved-line">${icon("check", 14)} محفوظ</span>` : ""}
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="btn btn-primary" data-act="reflSave">${saved ? "تحديث" : "حفظ"}</button>
+        ${saved ? `<span class="spacer"></span>
+          <button class="link-btn danger" data-act="reflDel">حذف</button>` : ""}
       </div>
-    </div>
+    </div>`}
   </div>`;
 }
 
@@ -1889,23 +1844,19 @@ function renderToday() {
   const unitsToday = board.reduce((a, b) => a + b.todo, 0);
   const behind = liveTasks().map(x => compute(x)).filter(c => c.status === "behind").length;
 
-  const strip = `
-  <div class="strip">
-    <div class="kpi accent"><span class="k">مهام اليوم</span>
-      <span class="v">${doneCount}<small>/ ${board.length}</small></span></div>
-    <div class="kpi"><span class="k">وحدات متبقية اليوم</span>
-      <span class="v">${fmt(unitsToday)}</span></div>
-    <div class="kpi ok"><span class="k">أيام متتالية مكتملة</span>
-      <span class="v">${st.cur}<small>أفضل ${st.best}</small></span></div>
-    <div class="kpi ${behind ? "brass" : ""}"><span class="k">مهام أعيد توزيعها</span>
-      <span class="v">${behind}</span></div>
-  </div>`;
-
   if (!board.length) {
-    return magicBar() + `<div class="empty"><h3>لا مهام بعد</h3>
+    return magicBar(true) + `<div class="empty"><h3>لا مهام بعد</h3>
       <p>اكتب مهمتك بالأعلى بلغتك العادية — يفهم «مقياس» المقدار والفترة وأيام الراحة،
          ويقسّمها عليك حتى يوصل لنصيب اليوم.</p></div>`;
   }
+
+  const summary = `
+  <div class="sumline">
+    <span><b>${doneCount}/${board.length}</b><i>مهام اليوم</i></span>
+    <span><b>${fmt(unitsToday)}</b><i>وحدة متبقية</i></span>
+    ${st.cur ? `<span><b>${st.cur}</b><i>يوم متتالٍ</i></span>` : ""}
+    ${behind ? `<span style="color:var(--brass)"><b style="color:var(--brass)">${behind}</b><i>أُعيد توزيعها</i></span>` : ""}
+  </div>`;
 
   const cards = board.map(b => {
     const { task, c, slot } = b;
@@ -1913,48 +1864,32 @@ function renderToday() {
     const when = slot.gran === "day" ? "اليوم"
                : slot.gran === "week" ? "هذا الأسبوع"
                : slot.gran === "month" ? "هذا الشهر" : per.short;
-    const stt = STATUS_TAG[c.status];
     return `
     <article class="tcard ${b.complete ? "done" : ""} ${b.idle ? "idle" : ""}" style="--tc:${colorVar(task.color)}">
-      <div class="tc-head">
+      <div class="tc-top">
         <button class="check" data-act="toggle" data-task="${task.id}"
                 aria-label="إنهاء نصيب ${when} من ${esc(task.title)}">${icon("check", 17)}</button>
-        <h3 class="tc-title">${esc(task.title)}</h3>
+        <div class="tc-id">
+          <h3 class="tc-title">${esc(task.title)}</h3>
+          <div class="tc-sub">باقٍ <b>${fmt(c.remaining)}</b> من ${fmt(c.target)} ${esc(task.unit)} في ${per.short}</div>
+        </div>
       </div>
-      <div class="tc-figure">
+      <div class="tc-act">
         <div class="tc-big ${b.complete ? "ok" : ""}">
           <b>${b.idle ? "—" : fmt(b.todo)}</b>
-          <i>${b.idle ? `لا شيء<br>مطلوب ${when}` : `${esc(task.unit)}<br>${when}`}</i>
+          <i>${b.idle ? `لا شيء<br>${when}` : `${esc(task.unit)}<br>${when}`}</i>
         </div>
-        <div class="tc-side">
-          <b>${fmt(c.remaining)}</b>
-          باقٍ من ${fmt(c.target)} في ${per.short}
-        </div>
-      </div>
-      <div class="tc-bar">
-        <div class="bar ${c.remaining === 0 ? "done" : ""}"><i style="width:${(c.pct * 100).toFixed(1)}%"></i></div>
-      </div>
-      <div class="tc-tags" style="padding-top:12px">
-        <span class="tag accent">${per.label}</span>
-        ${c.status !== "ontrack" ? `<span class="tag ${stt.cls}">${stt.txt}</span>` : ""}
-        ${b.done > 0 ? `<span class="tag ok">أنجزت ${fmt(b.done)}</span>` : ""}
-      </div>
-      <div class="tc-foot">
-        <div class="step">
+        ${b.idle ? "" : `<div class="step">
           <button data-act="dec" data-task="${task.id}" aria-label="إنقاص">−</button>
           <span class="val">${fmt(b.done)}</span>
           <button data-act="inc" data-task="${task.id}" aria-label="زيادة">+</button>
-        </div>
-        <span class="spacer"></span>
-        <button class="link-btn" data-act="edit" data-task="${task.id}">تعديل</button>
+        </div>`}
       </div>
+      <div class="tc-prog"><i style="width:${(c.pct * 100).toFixed(1)}%"></i></div>
     </article>`;
   }).join("");
 
-  return magicBar() + strip + `
-    <div class="section-head"><h2>نصيب اليوم</h2>
-      <span class="hint">${DAY_FULL[t.getDay()]} — ما يلزمك فعله الآن، محسوبًا من كل فترة</span>
-      <span class="line"></span></div>
+  return magicBar() + summary + `
     <div class="grid">${cards}</div>
     ${renderReflect()}`;
 }
@@ -1994,51 +1929,37 @@ function renderTasks() {
 
     return `
     <article class="tcard" style="--tc:${colorVar(task.color)}">
-      <div class="tc-head">
-        <h3 class="tc-title">${esc(task.title)}</h3>
-      </div>
-      <div class="tc-tags">
-        <span class="tag accent">${per.label}</span>
-        <span class="tag">${SPLITS[task.split].label}</span>
-        ${c.status !== "ontrack" ? `<span class="tag ${stt.cls}">${stt.txt}</span>` : ""}
-        ${task.rest && task.rest.length ? `<span class="tag">راحة: ${task.rest.map(d => DAY_SHORT[d]).join("، ")}</span>` : ""}
+      <div class="tc-top">
+        <div class="tc-id">
+          <h3 class="tc-title">${esc(task.title)}</h3>
+          <div class="tc-sub">
+            ${per.label} · ${SPLITS[task.split].label}
+            ${c.daysLeft > 0 ? ` · ${c.daysLeft} يوم متبقي` : " · انتهت الفترة"}
+          </div>
+          ${c.status !== "ontrack"
+            ? `<span class="tag ${stt.cls}" style="display:inline-block;margin-top:9px">${stt.txt}</span>` : ""}
+        </div>
+        <div class="tc-links">
+          <button class="ibtn" data-act="edit" data-task="${task.id}" aria-label="تعديل">${icon("edit", 15)}</button>
+          <button class="ibtn danger" data-act="del" data-task="${task.id}" aria-label="حذف">${icon("trash", 15)}</button>
+        </div>
       </div>
 
-      <div class="tc-figure">
+      <div class="tc-act">
         <div class="tc-big ${c.remaining === 0 ? "ok" : ""}">
           <b>${fmt(c.remaining)}</b>
-          <i>${esc(task.unit)}<br>باقٍ من ${fmt(c.target)}</i>
+          <i>${esc(task.unit)} باقية<br>من ${fmt(c.target)} · ≈ ${fmt(avg)} ${SPLITS[task.split].each}</i>
         </div>
-        <div class="tc-side">
-          <b>${fmt(c.doneTotal)}</b>
-          أنجزت في ${esc(periodTitle(task.period, today()))}
-        </div>
-      </div>
-
-      <div class="tc-bar">
-        <div class="bar ${c.remaining === 0 ? "done" : ""}">
-          <i style="width:${(c.pct * 100).toFixed(1)}%"></i>
-          ${c.pacePct > 0 && c.pacePct < 1 ? `<span class="pace" style="inset-inline-start:${(c.pacePct * 100).toFixed(1)}%" title="المفترض إنجازه قبل اليوم"></span>` : ""}
-        </div>
-      </div>
-      <div class="tc-note">
-        ${c.daysLeft > 0 ? `${c.daysLeft} يوم متبقي` : "انتهت الفترة"} ·
-        المتبقي ≈ <b class="num" style="color:var(--text-2)">${fmt(avg)}</b>
-        ${esc(task.unit)} ${SPLITS[task.split].each}
-      </div>
-
-      ${summary ? `<div class="tc-meter">${summary}</div>` : ""}
-
-      <div class="tc-foot">
         <div class="step">
           <button data-act="dec" data-task="${task.id}" aria-label="إنقاص">−</button>
           <span class="val">${fmt(c.cur ? c.cur.done : 0)}</span>
           <button data-act="inc" data-task="${task.id}" aria-label="زيادة">+</button>
         </div>
-        <span class="spacer"></span>
-        <button class="link-btn" data-act="edit" data-task="${task.id}">تعديل</button>
-        <button class="link-btn danger" data-act="del" data-task="${task.id}">حذف</button>
       </div>
+
+      ${summary ? `<div class="tc-meter">${summary}</div>` : ""}
+
+      <div class="tc-prog"><i style="width:${(c.pct * 100).toFixed(1)}%"></i></div>
 
       ${gran ? `<button class="disclose" data-act="expand" data-task="${task.id}" aria-expanded="${open}">
         ${open ? "إخفاء التفصيل" : "التفصيل اليومي"}
@@ -2559,20 +2480,8 @@ document.addEventListener("click", e => {
 
   switch (act) {
     case "nav":       view = el.dataset.v; render(); window.scrollTo({ top: 0, behavior: "smooth" }); break;
-    case "ex": {
-      const box = document.getElementById("magicIn");
-      if (box) { box.value = EXAMPLES[+el.dataset.i]; box.focus(); }
-      break;
-    }
-    case "magic": {
-      const box = document.getElementById("magicIn");
-      const text = box ? box.value.trim() : "";
-      if (!text) { if (box) box.focus(); break; }
-      const r = fehm(text);
-      if (box) box.value = "";
-      openForm(null, r);
-      break;
-    }
+    case "reflToggle": reflOpen = !reflOpen; render(); break;
+    case "magic": runMagic(); break;
     case "inc":       stepTask(id, +1); break;
     case "dec":       stepTask(id, -1); break;
     case "toggle": {
@@ -2635,6 +2544,7 @@ document.addEventListener("click", e => {
         at: Date.now()
       };
       reflDraft = null;
+      reflOpen = false;              /* يُطوى بعد الحفظ ويظهر ملخّصه في العنوان */
       save(); render();
       toast("حُفظ تأمل اليوم");
       break;
@@ -2704,11 +2614,7 @@ document.addEventListener("input", e => {
 });
 
 document.addEventListener("keydown", e => {
-  if (e.key === "Enter" && e.target.id === "magicIn") {
-    e.preventDefault();
-    document.querySelector('[data-act="magic"]').click();
-    return;
-  }
+  if (e.key === "Enter" && e.target.id === "magicIn") { e.preventDefault(); runMagic(); return; }
   if (e.key === "Escape" && draft) closeForm();
   if (e.key === "Enter" && draft && e.target.tagName === "INPUT" && e.target.type !== "checkbox") { e.preventDefault(); saveForm(); }
 });
