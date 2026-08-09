@@ -620,6 +620,67 @@ button.refl-head:hover{background:var(--surface-2)}
 .blk-bar i{display:block;height:100%;background:var(--brass);border-radius:99px}
 .blk-n{font-family:var(--font-num);font-weight:700;color:var(--text-2);font-size:12.5px}
 
+/* ============================================================
+   LOAD BOARD — كل المهام على محور أيام واحد
+   ============================================================ */
+.board{
+  display:grid;grid-template-columns:74px repeat(7,minmax(0,1fr));
+  gap:4px;align-items:stretch;
+}
+.bh{
+  text-align:center;font-size:10px;color:var(--text-3);line-height:1.35;
+  padding-bottom:2px;
+}
+.bh.now{color:var(--brass);font-weight:800}
+.bh b{display:block;font-family:var(--font-num);font-size:12px;color:var(--text-2);font-weight:700}
+.bh.now b{color:var(--brass)}
+.bname{
+  display:flex;align-items:center;gap:6px;min-width:0;
+  font-size:11.5px;font-weight:700;padding-inline-end:2px;
+}
+.bname i{width:7px;height:7px;border-radius:50%;background:var(--tc);flex:none}
+.bname span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bcell{
+  position:relative;height:40px;border-radius:9px;overflow:hidden;
+  background:var(--surface-2);border:1px solid var(--line);
+  display:block;width:100%;transition:border-color .16s,transform .12s;
+}
+button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
+.bcell .f{
+  position:absolute;inset-inline:0;bottom:0;height:var(--p,0%);
+  background:var(--tc);
+  background:color-mix(in srgb,var(--tc) 78%,transparent);
+}
+.bcell .n{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-family:var(--font-num);font-size:11.5px;font-weight:700;letter-spacing:-.03em;
+}
+.bcell.off{background:repeating-linear-gradient(135deg,var(--surface),var(--surface) 4px,var(--surface-2) 4px,var(--surface-2) 8px);border-style:dashed}
+.bcell.off .n{color:var(--text-3);font-size:10px}
+.bcell.miss{border-color:var(--bad);background:var(--bad-soft)}
+.bcell.miss .n{color:var(--bad)}
+.bcell.done .n{color:var(--on-accent)}
+.bcell.now{box-shadow:inset 0 0 0 2px var(--brass)}
+.bcell.est{border-style:dashed;opacity:.8}
+
+.btot .bcell{background:var(--surface-3);border-color:transparent;height:34px}
+.btot .bcell .f{background:var(--text-3);opacity:.35}
+.btot .bcell.hot .f{background:var(--bad);opacity:.5}
+.btot .bcell .n{font-size:11.5px;color:var(--text-2)}
+.btot .bname{color:var(--text-3);font-size:11.5px;font-weight:700}
+
+.board-scroll{overflow-x:auto}
+.board-scroll .board{min-width:296px}
+.wknav{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.wknav h3{font-size:14.5px;flex:1;color:var(--text-2);font-weight:700}
+.pillbtn{
+  padding:7px 14px;border-radius:99px;border:1px solid var(--line);
+  background:var(--surface-2);font-size:12.5px;font-weight:700;color:var(--text-2);
+  transition:all .16s;
+}
+.pillbtn:hover{border-color:var(--accent);color:var(--accent)}
+.pillbtn.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
 .empty{
   text-align:center;padding:56px 24px;color:var(--text-3);
   border:1px dashed var(--line-2);border-radius:var(--r-xl);background:var(--surface-2);
@@ -744,8 +805,15 @@ button.refl-head:hover{background:var(--surface-2)}
 }
 .chip:hover{border-color:var(--line-2);color:var(--text)}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-.chip.sq{width:38px;padding:8px 0;text-align:center;border-radius:11px}
-.chip.sq[aria-pressed="true"]{background:var(--brass);border-color:var(--brass);color:#fff}
+/* شدّة اليوم: ثلاث حالات بدل تبديل ثنائي */
+.chip.sq{
+  width:44px;padding:7px 0 5px;text-align:center;border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2;
+}
+.chip.sq em{font-style:normal;font-size:10px;font-weight:800;opacity:.85}
+.chip.sq.lv0{opacity:.5;border-style:dashed}
+.chip.sq.lv1{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.chip.sq.lv2{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .chip:disabled{opacity:.35;cursor:not-allowed}
 
 .swatches{display:flex;gap:8px}
@@ -928,7 +996,7 @@ let calSel = null;
 let lastAction = null;
 
 const save = () => {
-  _cc.clear();
+  bust();
   Store.set("mq.settings", S.settings);
   Store.set("mq.tasks", S.tasks);
   Store.set("mq.progress", S.progress);
@@ -984,18 +1052,47 @@ function periodTitle(period, ref) {
   }
 }
 
-/* count non-rest days inside [a,b] */
-function activeDays(a, b, rest) {
+/* ============================================================
+   وزن الأيام
+   لكل يوم من أيام الأسبوع شدّة: 0 راحة، 1 عادي، 2 مكثّف.
+   هي أساس التوزيع كله — يوم المكثّف يأخذ ضعف نصيب اليوم العادي.
+   ============================================================ */
+const INTENSITY = [[0, "راحة"], [1, "عادي"], [2, "مكثّف"]];
+
+/* المهام القديمة تحمل rest:[…] فقط؛ نشتق منها الأوزان دون تعديل بياناتها */
+function dayws(task) {
+  if (Array.isArray(task.dayw) && task.dayw.length === 7) return task.dayw;
+  const rest = task.rest || [];
+  return [0, 1, 2, 3, 4, 5, 6].map(d => (rest.includes(d) ? 0 : 1));
+}
+
+/* مجموع أوزان الأيام داخل [a,b] */
+function weightSpan(a, b, dw) {
   let n = 0;
-  for (let d = new Date(a); d <= b; d = addDays(d, 1)) if (!rest.includes(d.getDay())) n++;
+  for (let d = new Date(a); d <= b; d = addDays(d, 1)) n += dw[d.getDay()];
   return n;
+}
+
+/* منحنى التوزيع عبر الخانات: متساوٍ، أو تصاعدي، أو تنازلي */
+const CURVES = {
+  even: { label: "متساوٍ",   hint: "نفس النصيب في كل خانة" },
+  down: { label: "ابدأ قويًا", hint: "حِمل أثقل في البداية ويخفّ" },
+  up:   { label: "تدرّج",     hint: "يبدأ خفيفًا ويثقل تدريجيًا" }
+};
+function curveFactor(curve, i, n) {
+  if (n < 2 || !curve || curve === "even") return 1;
+  const t = i / (n - 1);                       // 0 → 1
+  return curve === "down" ? 1.7 - 1.4 * t : 0.3 + 1.4 * t;
 }
 
 /* ============================================================
    5. THE ENGINE — slots, distribution, smart rebalance
    ============================================================ */
 
-/* Split a total across n buckets by weight, with exact sum (cumulative rounding). */
+/* توزيع مجموع على خانات بأوزان، بمجموع مطابق تمامًا.
+   تقريب تراكمي: نقرّب المجموع الجاري ثم نأخذ الفرق. ميزته أنه يوزّع
+   المجاميع الصغيرة على كامل المدى (٥ وحدات على ربع سنة تتفرّق بدل أن
+   تتكدّس في أول خمسة أيام)، ويحترم ترتيب المنحنى في الوقت نفسه. */
 function distribute(total, weights, decimals) {
   const n = weights.length;
   if (!n) return [];
@@ -1011,6 +1108,14 @@ function distribute(total, weights, decimals) {
     prev = c;
   }
   return out;
+}
+
+/* التقسيم الموصى به لكل فترة — الوحدة الأصغر المعقولة */
+function bestSplit(period) {
+  const rec = { daily:"none", weekly:"day", monthly:"day",
+                quarterly:"week", half:"month", yearly:"month" }[period] || "none";
+  const allowed = PERIODS[period].splits;
+  return allowed.includes(rec) ? rec : allowed[0];
 }
 
 /* ============================================================
@@ -1216,14 +1321,7 @@ function fehm(raw) {
     converted = true;
   }
 
-  const allowed = PERIODS[period].splits;
-  if (!split || !allowed.includes(split)) {
-    split = period === "daily" ? "none"
-          : period === "weekly" ? "day"
-          : period === "monthly" ? "day"
-          : period === "quarterly" ? "week" : "month";
-    if (!allowed.includes(split)) split = allowed[0];
-  }
+  if (!split || !PERIODS[period].splits.includes(split)) split = bestSplit(period);
   if (split !== "day") rest = [];
   if (target == null) target = 1;
   const noUnit = !unit;
@@ -1239,11 +1337,11 @@ function fehm(raw) {
 }
 
 /* Enumerate leaf slots of a period at a granularity. */
-function enumSlots(range, gran, rest) {
+function enumSlots(range, gran, dw) {
   const out = [];
   if (gran === "day") {
     for (let d = new Date(range.start); d <= range.end; d = addDays(d, 1)) {
-      out.push({ k: key(d), gran: "day", start: new Date(d), end: new Date(d), rest: rest.includes(d.getDay()) });
+      out.push({ k: key(d), gran: "day", start: new Date(d), end: new Date(d), rest: dw[d.getDay()] === 0 });
     }
   } else if (gran === "week") {
     for (let s = startOfWeek(range.start); s <= range.end; s = addDays(s, 7)) {
@@ -1270,8 +1368,8 @@ function enumSlots(range, gran, rest) {
   } else {
     out.push({ k: "all", gran: "period", start: new Date(range.start), end: new Date(range.end), rest: false });
   }
-  /* a bucket made only of rest days carries no work */
-  out.forEach(s => { s.active = s.rest ? 0 : activeDays(s.start, s.end, rest); if (s.active === 0) s.rest = true; });
+  /* الخانة التي كل أيامها راحة لا تحمل عملًا */
+  out.forEach(s => { s.active = weightSpan(s.start, s.end, dw); if (s.active === 0) s.rest = true; });
   return out;
 }
 
@@ -1304,13 +1402,18 @@ function slotLong(s) {
    • target / doneTotal / remaining          ← the "10 becomes 8" number
    • pace (expected-by-now) & status
 */
+/* الذاكرة المؤقتة تعيش عبر عمليات الرسم، ويبطلها تغيّر البيانات وحده.
+   قبلًا كانت تُمسح مع كل رسم، فيُعاد حساب كل شيء عند كل ضغطة. */
+let _dv = 0;                       // رقم إصدار البيانات
 const _cc = new Map();
-const bust = () => _cc.clear();
+const _ds = new Map();             // ذاكرة نتيجة اليوم
+const bust = () => { _dv++; _cc.clear(); _ds.clear(); };
 
 function compute(task, ref) {
   ref = ref || today();
-  const ck = [task.id, periodKey(task.period, ref), task.split, task.target,
-              (task.rest || []).join("."), task.catchup].join("|");
+  const ck = task.id + "|" + periodKey(task.period, ref) + "|" + task.split + "|" +
+             task.target + "|" + dayws(task).join("") + "|" + task.catchup + "|" +
+             (task.curve || "even") + "|" + _dv;
   const hit = _cc.get(ck);
   if (hit) return hit;
   const out = compute_(task, ref);
@@ -1322,13 +1425,17 @@ function compute_(task, ref) {
   const t = today();
   const range = periodRange(task.period, ref);
   const pk = periodKey(task.period, ref);
-  const rest = task.rest || [];
+  const dw = dayws(task);
+  const curve = task.curve || "even";
   const dec = Number.isInteger(task.target) ? 0 : 1;
-  const slots = enumSlots(range, task.split, rest);
+  const slots = enumSlots(range, task.split, dw);
   const prog = (S.progress[task.id] || {})[pk] || {};
 
-  /* 1 — the original, even plan */
-  const plan = distribute(task.target, slots.map(s => s.active), dec);
+  /* 1 — الخطة الأصلية: وزن اليوم × منحنى الفترة */
+  const live0 = slots.filter(s => !s.rest);
+  const cf = new Map();
+  live0.forEach((s, i) => cf.set(s.k, curveFactor(curve, i, live0.length)));
+  const plan = distribute(task.target, slots.map(s => s.active * (cf.get(s.k) || 1)), dec);
   let doneTotal = 0;
   slots.forEach((s, i) => {
     s.plan = plan[i];
@@ -1341,9 +1448,9 @@ function compute_(task, ref) {
   /* 2 — smart rebalance: anything missed rolls forward onto what's left */
   const live = slots.filter(s => s.end >= t && !s.rest);
   if (task.catchup !== false && live.length) {
-    const w = live.map(s => {
-      const from = s.start < t ? t : s.start;      // only days still ahead of us
-      return Math.max(activeDays(from, s.end, rest), 0.25);
+    const w = live.map((s, i) => {
+      const from = s.start < t ? t : s.start;      // فقط الأيام التي ما زالت أمامنا
+      return Math.max(weightSpan(from, s.end, dw), 0.25) * curveFactor(curve, i, live.length);
     });
     const todo = distribute(remaining, w, dec);
     live.forEach((s, i) => { s.todo = todo[i]; });
@@ -1459,6 +1566,9 @@ function todayBoard() {
 }
 
 function dayScore(date) {
+  const dk = key(date);
+  const hit = _ds.get(dk);
+  if (hit !== undefined) return hit;
   let sum = 0, n = 0;
   liveTasks().forEach(task => {
     if (parseKey(task.created) > date) return;
@@ -1469,27 +1579,23 @@ function dayScore(date) {
     n++;
     sum += Math.min(1, sh.done / sh.plan);
   });
-  return n ? { score: sum / n, n } : null;
+  const out = n ? { score: sum / n, n } : null;
+  _ds.set(dk, out);
+  return out;
 }
+
 function streaks() {
-  let cur = 0, best = 0, run = 0;
   const t = today();
+  let best = 0, run = 0, cur = 0, seenToday = false;
   for (let i = 120; i >= 0; i--) {
-    const d = addDays(t, -i);
-    const s = dayScore(d);
-    if (s && s.score >= 0.999) { run++; best = Math.max(best, run); }
-    else if (s) { run = 0; }
+    const s = dayScore(addDays(t, -i));
+    if (!s) continue;
+    if (s.score >= 0.999) { run++; best = Math.max(best, run); }
+    else if (i > 0) run = 0;          /* يوم اليوم لم ينتهِ بعد فلا يكسر السلسلة */
+    else seenToday = true;
     if (i === 0) cur = run;
   }
-  /* today still in progress shouldn't break the chain */
-  if (cur === 0) {
-    let back = 0;
-    for (let i = 1; i <= 120; i++) {
-      const s = dayScore(addDays(t, -i));
-      if (s && s.score >= 0.999) back++; else break;
-    }
-    cur = back;
-  }
+  if (seenToday) cur = run;
   return { cur, best: Math.max(best, cur) };
 }
 
@@ -1974,6 +2080,104 @@ function renderTasks() {
   return `<div class="grid wide">${cards}</div>`;
 }
 
+/* ============================================================
+   لوحة التوزيع: صفٌّ لكل مهمة، وعمودٌ لكل يوم، ومحصّلة الحمل أسفلها
+   ============================================================ */
+let boardRef = null;
+
+function weekBoard(ref) {
+  const ws = startOfWeek(ref);
+  const days = Array.from({ length: 7 }, (_, i) => addDays(ws, i));
+  const rows = liveTasks().map(task => {
+    const cells = days.map(d => {
+      const sh = dayShare(task, d);
+      return sh ? sh : { plan: 0, done: 0, todo: 0, exact: true, off: true };
+    });
+    return { task, cells };
+  }).filter(r => r.cells.some(c => c.plan > 0 || c.done > 0));
+
+  const totals = days.map((_, i) => round2(rows.reduce((a, r) => a + (r.cells[i].todo || 0), 0)));
+  const plans  = days.map((_, i) => round2(rows.reduce((a, r) => a + (r.cells[i].plan || 0), 0)));
+  const busy   = plans.filter(v => v > 0);
+  const median = busy.length ? busy.slice().sort((a, b) => a - b)[Math.floor(busy.length / 2)] : 0;
+  return { ws, days, rows, totals, plans, max: Math.max(...plans, 1), median };
+}
+
+function renderBoard() {
+  const t = today();
+  const ref = boardRef || t;
+  const B = weekBoard(ref);
+  const isNow = key(startOfWeek(t)) === key(B.ws);
+
+  if (!B.rows.length) {
+    return `<div class="empty"><h3>لا توزيع بعد</h3>
+      <p>أضف مهمة وسيظهر هنا نصيب كل يوم منها، ومجموع حِملك اليومي.</p></div>`;
+  }
+
+  const head = `<div class="bname"></div>` + B.days.map(d => {
+    const now = sameDay(d, t);
+    return `<div class="bh ${now ? "now" : ""}">${DAY_SHORT[d.getDay()].slice(0, 3)}<b>${ltr(d.getDate())}</b></div>`;
+  }).join("");
+
+  /* display:contents يُبقي الخلايا في شبكة اللوحة، ويحمل لون المهمة للصف */
+  const rows = B.rows.map(r => {
+    const cells = r.cells.map((c, i) => {
+      const d = B.days[i];
+      if (c.off) return `<div class="bcell off"><span class="n">—</span></div>`;
+      const past = d < t, now = sameDay(d, t);
+      const goal = round2(c.done + c.todo) || c.plan;
+      const p = goal > 0 ? Math.min(100, (c.done / goal) * 100) : 0;
+      const cls = ["bcell",
+        past && c.done < c.plan ? "miss" : "",
+        now ? "now" : "",
+        goal > 0 && c.done >= goal ? "done" : "",
+        c.exact ? "" : "est"].filter(Boolean).join(" ");
+      const tag = c.exact ? "button" : "div";
+      const at = c.exact ? ` data-act="bcell" data-task="${r.task.id}" data-d="${key(d)}"` : "";
+      return `<${tag} class="${cls}"${at} title="${esc(DAY_FULL[d.getDay()])} — ${fmt(c.done)} / ${fmt(goal)}">
+        <span class="f" style="height:${p}%"></span>
+        <span class="n">${c.exact ? fmt(past ? c.done : (c.todo > 0 ? c.todo : c.done)) : "·"}</span></${tag}>`;
+    }).join("");
+    return `<div style="display:contents;--tc:${colorVar(r.task.color)}">
+      <div class="bname"><i></i><span title="${esc(r.task.title)}">${esc(r.task.title)}</span></div>
+      ${cells}
+    </div>`;
+  }).join("");
+
+  const tot = `<div class="bname">الحمل</div>` + B.plans.map((v, i) => {
+    const hot = B.median > 0 && v > B.median * 1.6;
+    return `<div class="bcell ${hot ? "hot" : ""}" title="مجموع المخطط">
+      <span class="f" style="height:${Math.min(100, (v / B.max) * 100)}%"></span>
+      <span class="n">${v > 0 ? fmt(Math.round(v)) : "—"}</span></div>`;
+  }).join("");
+
+  const heavy = B.plans.map((v, i) => ({ v, i }))
+    .filter(x => B.median > 0 && x.v > B.median * 1.6)
+    .map(x => DAY_FULL[B.days[x.i].getDay()]);
+
+  return `
+  <div class="card" style="padding:18px">
+    <h3 style="font-size:14px;color:var(--text-2);margin-bottom:11px">
+      ${rangeHtml(B.ws, addDays(B.ws, 6))} ${MONTHS[addDays(B.ws, 6).getMonth()]}</h3>
+    <div class="wknav">
+      <button class="pillbtn" data-act="bwk" data-v="-1">رجوع</button>
+      <button class="pillbtn ${isNow ? "on" : ""}" data-act="bwk" data-v="0">هذا الأسبوع</button>
+      <button class="pillbtn" data-act="bwk" data-v="1">التالي</button>
+    </div>
+    <div class="board-scroll">
+      <div class="board">${head}${rows}<div class="btot" style="display:contents">${tot}</div></div>
+    </div>
+    ${heavy.length ? `<div class="advice" style="margin-top:14px">
+      <span>${heavy.join(" و")} أثقل بكثير من بقية أيامك. خفّف شدّته من إعدادات المهمة،
+        أو انقل جزءًا منه ليوم أخف.</span></div>` : ""}
+    <div class="legend-dots" style="margin-top:14px">
+      <span><i style="background:var(--accent)"></i> منجز</span>
+      <span><i style="background:var(--bad)"></i> فائت</span>
+      <span style="color:var(--text-3)">الخانة المتقطّعة = حصة تقديرية من فترة أكبر</span>
+    </div>
+  </div>`;
+}
+
 function renderCal() {
   const ref = new Date(calRef.getFullYear(), calRef.getMonth(), 1);
   const t = today();
@@ -2258,7 +2462,6 @@ function splitAdvice(d, per) {
 }
 
 function paintForm() {
-  bust();
   const d = draft;
   const allowed = PERIODS[d.period].splits;
   if (!allowed.includes(d.split)) d.split = allowed[0];
@@ -2271,8 +2474,17 @@ function paintForm() {
     const on = allowed.includes(k);
     return `<button class="chip" data-f="split" data-v="${k}" aria-pressed="${d.split === k}" ${on ? "" : "disabled"}>${SPLITS[k].label}</button>`;
   }).join("");
-  const dayChips = DAY_FULL.map((n, i) =>
-    `<button class="chip sq" data-f="rest" data-v="${i}" aria-pressed="${d.rest.includes(i)}" title="${n}">${DAY_SHORT[i].slice(0, 3)}</button>`).join("");
+  /* شدّة كل يوم: ضغطة تنقلك بين راحة/عادي/مكثّف */
+  const dwArr = dayws(d);
+  const dayChips = DAY_FULL.map((n, i) => {
+    const w = dwArr[i];
+    return `<button class="chip sq lv${w}" data-f="dayw" data-v="${i}"
+      title="${n} — ${INTENSITY[w][1]}" aria-label="${n}: ${INTENSITY[w][1]}">
+      ${DAY_SHORT[i].slice(0, 3)}<em>${w === 0 ? "·" : w === 1 ? "١" : "٢"}</em></button>`;
+  }).join("");
+  const curveChips = Object.entries(CURVES).map(([k, v]) =>
+    `<button class="chip" data-f="curve" data-v="${k}"
+       aria-pressed="${(d.curve || "even") === k}" title="${v.hint}">${v.label}</button>`).join("");
   const swatches = COLORS.map(cc =>
     `<button class="sw" style="--s:${cc.v}" data-f="color" data-v="${cc.id}" aria-pressed="${d.color === cc.id}" aria-label="لون ${cc.id}"></button>`).join("");
   const units = UNIT_SUGGEST.map(u => `<option value="${u}"></option>`).join("");
@@ -2320,9 +2532,16 @@ function paintForm() {
 
         ${d.split === "day" ? `
         <div class="field">
-          <label>أيام الراحة <span class="note">(تستثنى من التوزيع)</span></label>
+          <label>شدّة الأيام <span class="note">(اضغط اليوم لتغيّره: راحة ← عادي ← مكثّف)</span></label>
           <div class="chips">${dayChips}</div>
+          <span class="note">اليوم المكثّف يأخذ ضعف نصيب اليوم العادي، ويوم الراحة لا يأخذ شيئًا.</span>
         </div>` : ""}
+
+        <div class="field">
+          <label>منحنى التوزيع</label>
+          <div class="chips">${curveChips}</div>
+          <span class="note">${CURVES[d.curve || "even"].hint}.</span>
+        </div>
 
         <label class="switch">
           <input type="checkbox" data-f="catchup" ${d.catchup !== false ? "checked" : ""}>
@@ -2353,8 +2572,10 @@ function saveForm() {
   d.title = (d.title || "").trim() || "مهمة بلا عنوان";
   d.unit  = (d.unit  || "").trim() || "وحدة";
   d.target = Math.max(0, Number(d.target) || 0);
+  const dw = dayws(d);
   const clean = { id:d.id, title:d.title, unit:d.unit, target:d.target, period:d.period,
-                  split:d.split, rest:d.rest, catchup:d.catchup, color:d.color,
+                  split:d.split, dayw:dw, rest:dw.map((w,i)=>w===0?i:-1).filter(i=>i>=0),
+                  curve:d.curve || "even", catchup:d.catchup, color:d.color,
                   created:d.created, archived:false };
   const i = S.tasks.findIndex(t => t.id === d.id);
   if (i >= 0) S.tasks[i] = clean; else S.tasks.push(clean);
@@ -2369,7 +2590,7 @@ function saveForm() {
 const NAV = [
   { id:"today", label:"يومك",      icon:"today", title:"يومك" },
   { id:"tasks", label:"المهام",    icon:"list",  title:"المهام والتقسيم" },
-  { id:"cal",   label:"التقويم",   icon:"cal",   title:"التقويم" },
+  { id:"cal",   label:"التوزيع",   icon:"cal",   title:"لوحة التوزيع" },
   { id:"stats", label:"الإحصاءات", icon:"chart", title:"الإحصاءات" },
   { id:"set",   label:"الإعدادات", icon:"gear",  title:"الإعدادات" }
 ];
@@ -2381,7 +2602,7 @@ function renderNav() {
     </button>`).join("") + `</div>`;
 }
 
-const VERSION_TXT = "v7";
+const VERSION_TXT = "v8";
 const WEEK_STARTS = [[0, "الأحد"], [1, "الاثنين"], [6, "السبت"]];
 const THEMES = [["dark", "داكن"], ["light", "فاتح"], ["auto", "حسب النظام"]];
 
@@ -2488,7 +2709,6 @@ function applyTheme() {
 }
 
 function render() {
-  bust();
   renderNav();
   const meta = NAV.find(x => x.id === view);
   document.getElementById("pageTitle").textContent = meta.title;
@@ -2501,7 +2721,7 @@ function render() {
   host.classList.add("on");
   host.innerHTML = view === "today" ? renderToday()
                  : view === "tasks" ? renderTasks()
-                 : view === "cal"   ? renderCal()
+                 : view === "cal"   ? renderBoard() + renderCal()
                  : view === "stats" ? renderStats()
                  : renderSettings();
 }
@@ -2525,6 +2745,29 @@ document.addEventListener("click", e => {
   switch (act) {
     case "nav":       view = el.dataset.v; render(); window.scrollTo({ top: 0, behavior: "smooth" }); break;
     case "reflToggle": reflOpen = !reflOpen; render(); break;
+    case "bwk": {
+      const n = Number(el.dataset.v);
+      boardRef = n === 0 ? null : addDays(startOfWeek(boardRef || today()), n * 7);
+      render();
+      break;
+    }
+    case "bcell": {
+      const task = S.tasks.find(x => x.id === el.dataset.task);
+      const d = parseKey(el.dataset.d);
+      const c = compute(task, d);
+      const slot = c.slots.find(x => x.start <= d && d <= x.end);
+      if (!slot || slot.rest) break;
+      dialog({
+        title: `${esc(task.title)} — ${DAY_FULL[d.getDay()]} ${ltr(d.getDate())} ${MONTHS[d.getMonth()]}`,
+        sub: `المطلوب <b class="num">${fmt(slot.todo)}</b> ${esc(task.unit)}`,
+        fieldLabel: `كم ${task.unit} أنجزت؟`, value: fmt(slot.done), okLabel: "حفظ"
+      }).then(v => {
+        if (v === null || Number.isNaN(v)) return;
+        setProgress(task.id, c.pk, slot.k, v);
+        toast(`تم تسجيل ${fmt(v)} ${task.unit}`);
+      });
+      break;
+    }
     case "setTheme":  S.settings.theme = el.dataset.v; save(); applyTheme(); render(); break;
     case "setWeek":   S.settings.weekStart = Number(el.dataset.v); save(); render(); break;
     case "export":    exportBackup(); break;
@@ -2650,12 +2893,15 @@ document.addEventListener("click", e => {
      لاختفى الحقل تحت الإصبع وأُغلقت لوحة المفاتيح. */
   const f = el.dataset.f, v = el.dataset.v;
   if (!draft || v == null) return;
-  if (f === "period") { draft.period = v; const a = PERIODS[v].splits; if (!a.includes(draft.split)) draft.split = a[0]; }
+  if (f === "period") { draft.period = v; draft.split = bestSplit(v); }
   else if (f === "split") draft.split = v;
   else if (f === "color") draft.color = v;
-  else if (f === "rest") {
-    const n = Number(v);
-    draft.rest = draft.rest.includes(n) ? draft.rest.filter(x => x !== n) : [...draft.rest, n].sort();
+  else if (f === "curve") draft.curve = v;
+  else if (f === "dayw") {
+    const n = Number(v), arr = dayws(draft).slice();
+    arr[n] = (arr[n] + 1) % 3;                       // راحة ← عادي ← مكثّف
+    draft.dayw = arr;
+    draft.rest = arr.map((w, i) => (w === 0 ? i : -1)).filter(i => i >= 0);
   } else return;
   paintForm();
 });
@@ -2671,7 +2917,6 @@ document.addEventListener("input", e => {
   draft[f] = e.target.value;
   if (f === "target" || f === "unit") {
     /* repaint only the preview so typing isn't interrupted */
-    bust();
     const box = document.querySelector(".preview");
     if (box) box.innerHTML = previewInner(draft);
   }

@@ -1,6 +1,6 @@
 /* مقياس — service worker: يجعل التطبيق يعمل بالكامل بدون إنترنت.
    ارفع رقم النسخة عند كل تحديث حتى تُستبدل الملفات المخزّنة. */
-const VERSION = "miqyas-v7";
+const VERSION = "miqyas-v8";
 const SHELL = [
   "./",
   "./index.html",
