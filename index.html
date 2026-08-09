@@ -8,8 +8,8 @@
 <meta name="description" content="تطبيق مهام يقسّم أهدافك اليومية والأسبوعية والشهرية والسنوية على وحدات أصغر تلقائيًا">
 
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#F1F5F7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0A1622" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F5F7FB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#070A11" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -27,95 +27,110 @@
    TOKENS
    ============================================================ */
 :root{
-  /* light */
-  --bg:#F1F5F7;
-  --bg-grad:radial-gradient(1100px 560px at 100% -12%, #DCEEEB 0%, transparent 62%);
+  /* ---- light ---- */
+  --bg:#F5F7FB;
+  --bg-glow:radial-gradient(900px 420px at 82% -8%, rgba(6,169,140,.16) 0%, transparent 68%),
+            radial-gradient(700px 380px at 10% 4%, rgba(14,134,184,.10) 0%, transparent 70%);
+  --card-a:#FFFFFF;
+  --card-b:#FBFCFE;
   --surface:#FFFFFF;
-  --surface-2:#EFF4F7;
-  --surface-3:#E3EBF0;
-  --line:#DBE4EA;
-  --line-2:#C2D2DC;
-  --text:#0C1A24;
-  --text-2:#445A69;
-  --text-3:#7B92A2;
-  --accent:#0E9384;
-  --accent-2:#0B7A6E;
-  --accent-soft:#D5F2ED;
+  --surface-2:#F0F3F8;
+  --surface-3:#E5EAF2;
+  --line:rgba(16,24,40,.09);
+  --line-2:rgba(16,24,40,.18);
+  --hair:rgba(255,255,255,.9);
+  --text:#0A1020;
+  --text-2:#48546A;
+  --text-3:#8791A5;
+  --accent:#06A98C;
+  --accent-2:#0E86B8;
+  --accent-soft:rgba(6,169,140,.12);
+  --accent-glow:rgba(6,169,140,.30);
   --on-accent:#FFFFFF;
-  --brass:#B45309;
-  --brass-soft:#FCEBD5;
+  --brass:#B4690E;
+  --brass-soft:rgba(180,105,14,.12);
   --ok:#0F8A5F;
-  --ok-soft:#D6F2E5;
-  --bad:#C3413B;
-  --bad-soft:#FAE3E2;
-  --shadow-1:0 1px 2px rgba(12,26,36,.05), 0 1px 1px rgba(12,26,36,.04);
-  --shadow-2:0 18px 40px -20px rgba(12,26,36,.26), 0 2px 8px rgba(12,26,36,.06);
-  --shadow-pop:0 24px 60px -18px rgba(12,26,36,.35);
+  --ok-soft:rgba(15,138,95,.12);
+  --bad:#C6403C;
+  --bad-soft:rgba(198,64,60,.12);
+  --elev-1:0 1px 2px rgba(10,16,32,.06), inset 0 1px 0 var(--hair);
+  --elev-2:0 10px 30px -12px rgba(10,16,32,.20), 0 2px 6px rgba(10,16,32,.05), inset 0 1px 0 var(--hair);
+  --elev-3:0 26px 60px -20px rgba(10,16,32,.30), inset 0 1px 0 var(--hair);
 
-  --c-teal:#0E9384; --c-ocean:#2563EB; --c-plum:#9333EA;
-  --c-brass:#B45309; --c-olive:#4D7C0F; --c-clay:#E11D48;
+  --c-teal:#06A98C; --c-ocean:#2563EB; --c-plum:#7C3AED;
+  --c-brass:#B4690E; --c-olive:#4D7C0F; --c-clay:#E11D48;
 
   --font-display:"SF Arabic Rounded","Noto Kufi Arabic","Dubai","Cairo","SF Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
   --font-body:"SF Arabic","Noto Sans Arabic","IBM Plex Sans Arabic","Dubai","Segoe UI",Tahoma,system-ui,sans-serif;
   --font-num:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Mono",Consolas,monospace;
 
-  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:24px;
-  --col:760px;
+  --r-sm:10px; --r-md:15px; --r-lg:20px; --r-xl:26px; --r-2xl:32px;
+  --col:720px;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#0A1622;
-    --bg-grad:radial-gradient(1100px 560px at 100% -12%, #102B33 0%, transparent 62%);
-    --surface:#132433;
-    --surface-2:#182E3F;
-    --surface-3:#1F3A4D;
-    --line:#263F53;
-    --line-2:#35576F;
-    --text:#E9F2F7;
-    --text-2:#9FB6C7;
-    --text-3:#6D8799;
-    --accent:#2DD4BF;
-    --accent-2:#5EEAD4;
-    --accent-soft:#0E3330;
-    --on-accent:#04211E;
+    --bg:#070A11;
+    --bg-glow:radial-gradient(900px 420px at 82% -8%, rgba(52,231,197,.13) 0%, transparent 68%),
+              radial-gradient(760px 400px at 8% 2%, rgba(34,195,230,.10) 0%, transparent 72%);
+    --card-a:#141926;
+    --card-b:#0F131E;
+    --surface:#141926;
+    --surface-2:#1A2030;
+    --surface-3:#232A3D;
+    --line:rgba(255,255,255,.075);
+    --line-2:rgba(255,255,255,.16);
+    --hair:rgba(255,255,255,.07);
+    --text:#EFF3FA;
+    --text-2:#A2AEC4;
+    --text-3:#6B7488;
+    --accent:#34E7C5;
+    --accent-2:#22C3E6;
+    --accent-soft:rgba(52,231,197,.13);
+    --accent-glow:rgba(52,231,197,.45);
+    --on-accent:#04231C;
     --brass:#FBBF24;
-    --brass-soft:#33290F;
+    --brass-soft:rgba(251,191,36,.14);
     --ok:#34D399;
-    --ok-soft:#0D3025;
-    --bad:#F87171;
-    --bad-soft:#37191B;
-    --shadow-1:0 1px 2px rgba(0,0,0,.4);
-    --shadow-2:0 18px 40px -20px rgba(0,0,0,.8), 0 2px 8px rgba(0,0,0,.35);
-    --shadow-pop:0 24px 60px -18px rgba(0,0,0,.85);
-    --c-teal:#2DD4BF; --c-ocean:#60A5FA; --c-plum:#C084FC;
+    --ok-soft:rgba(52,211,153,.14);
+    --bad:#FB7185;
+    --bad-soft:rgba(251,113,133,.14);
+    --elev-1:0 1px 2px rgba(0,0,0,.5), inset 0 1px 0 var(--hair);
+    --elev-2:0 12px 32px -12px rgba(0,0,0,.75), 0 2px 8px rgba(0,0,0,.4), inset 0 1px 0 var(--hair);
+    --elev-3:0 30px 70px -24px rgba(0,0,0,.85), inset 0 1px 0 var(--hair);
+    --c-teal:#34E7C5; --c-ocean:#4FA8FF; --c-plum:#A78BFA;
     --c-brass:#FBBF24; --c-olive:#A3E635; --c-clay:#FB7185;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0A1622;
-  --bg-grad:radial-gradient(1100px 560px at 100% -12%, #102B33 0%, transparent 62%);
-  --surface:#132433;
-  --surface-2:#182E3F;
-  --surface-3:#1F3A4D;
-  --line:#263F53;
-  --line-2:#35576F;
-  --text:#E9F2F7;
-  --text-2:#9FB6C7;
-  --text-3:#6D8799;
-  --accent:#2DD4BF;
-  --accent-2:#5EEAD4;
-  --accent-soft:#0E3330;
-  --on-accent:#04211E;
+  --bg:#070A11;
+  --bg-glow:radial-gradient(900px 420px at 82% -8%, rgba(52,231,197,.13) 0%, transparent 68%),
+            radial-gradient(760px 400px at 8% 2%, rgba(34,195,230,.10) 0%, transparent 72%);
+  --card-a:#141926;
+  --card-b:#0F131E;
+  --surface:#141926;
+  --surface-2:#1A2030;
+  --surface-3:#232A3D;
+  --line:rgba(255,255,255,.075);
+  --line-2:rgba(255,255,255,.16);
+  --hair:rgba(255,255,255,.07);
+  --text:#EFF3FA;
+  --text-2:#A2AEC4;
+  --text-3:#6B7488;
+  --accent:#34E7C5;
+  --accent-2:#22C3E6;
+  --accent-soft:rgba(52,231,197,.13);
+  --accent-glow:rgba(52,231,197,.45);
+  --on-accent:#04231C;
   --brass:#FBBF24;
-  --brass-soft:#33290F;
+  --brass-soft:rgba(251,191,36,.14);
   --ok:#34D399;
-  --ok-soft:#0D3025;
-  --bad:#F87171;
-  --bad-soft:#37191B;
-  --shadow-1:0 1px 2px rgba(0,0,0,.4);
-  --shadow-2:0 18px 40px -20px rgba(0,0,0,.8), 0 2px 8px rgba(0,0,0,.35);
-  --shadow-pop:0 24px 60px -18px rgba(0,0,0,.85);
-  --c-teal:#2DD4BF; --c-ocean:#60A5FA; --c-plum:#C084FC;
+  --ok-soft:rgba(52,211,153,.14);
+  --bad:#FB7185;
+  --bad-soft:rgba(251,113,133,.14);
+  --elev-1:0 1px 2px rgba(0,0,0,.5), inset 0 1px 0 var(--hair);
+  --elev-2:0 12px 32px -12px rgba(0,0,0,.75), 0 2px 8px rgba(0,0,0,.4), inset 0 1px 0 var(--hair);
+  --elev-3:0 30px 70px -24px rgba(0,0,0,.85), inset 0 1px 0 var(--hair);
+  --c-teal:#34E7C5; --c-ocean:#4FA8FF; --c-plum:#A78BFA;
   --c-brass:#FBBF24; --c-olive:#A3E635; --c-clay:#FB7185;
 }
 
@@ -128,7 +143,7 @@ body{
   margin:0;
   direction:rtl;
   background:var(--bg);
-  background-image:var(--bg-grad);
+  background-image:var(--bg-glow);
   background-attachment:fixed;
   color:var(--text);
   font-family:var(--font-body);
@@ -152,83 +167,79 @@ button{cursor:pointer;background:none;border:0;padding:0}
    ============================================================ */
 .app{min-height:100dvh;display:flex;flex-direction:column}
 
-/* شريط التطبيق العلوي — ثابت، ويحترم منطقة الأمان */
+/* شريط علوي شفّاف يذوب في الأرضية */
 .appbar{
   position:sticky;top:0;z-index:30;
-  background:var(--surface);
-  background:color-mix(in srgb,var(--surface) 90%,transparent);
-  backdrop-filter:blur(16px);
+  background:color-mix(in srgb,var(--bg) 78%,transparent);
+  backdrop-filter:blur(20px) saturate(150%);
   border-bottom:1px solid var(--line);
   padding-top:env(safe-area-inset-top);
 }
 .appbar-in{
   max-width:var(--col);margin-inline:auto;
-  display:flex;align-items:center;gap:11px;
-  padding:11px 18px;
-  padding-inline-start:max(18px, env(safe-area-inset-left));
-  padding-inline-end:max(18px, env(safe-area-inset-right));
+  display:flex;align-items:center;gap:9px;
+  padding:12px 20px;
+  padding-inline-start:max(20px, env(safe-area-inset-left));
+  padding-inline-end:max(20px, env(safe-area-inset-right));
 }
 .brand{display:flex;align-items:center;gap:10px}
 .brand-mark{
   width:34px;height:34px;border-radius:11px;flex:none;
-  background:linear-gradient(150deg,var(--accent),var(--accent-2));
+  background:linear-gradient(145deg,var(--accent),var(--accent-2));
   display:grid;place-items:center;color:var(--on-accent);
-  box-shadow:0 6px 16px -8px var(--accent);
+  box-shadow:0 6px 18px -6px var(--accent-glow);
 }
-.brand-name{font-family:var(--font-display);font-weight:800;font-size:16px;letter-spacing:-.02em}
+.brand-name{font-family:var(--font-display);font-weight:800;font-size:16px;letter-spacing:-.03em}
 
-/* عمود المحتوى: يتوسّط على الآيباد والشاشات الكبيرة بدل أن يتمدد */
 .main{
   flex:1;min-width:0;width:100%;
   max-width:var(--col);margin-inline:auto;
-  padding:20px 18px calc(112px + env(safe-area-inset-bottom));
-  padding-inline-start:max(18px, env(safe-area-inset-left));
-  padding-inline-end:max(18px, env(safe-area-inset-right));
-  display:flex;flex-direction:column;gap:20px;
+  padding:22px 20px calc(124px + env(safe-area-inset-bottom));
+  padding-inline-start:max(20px, env(safe-area-inset-left));
+  padding-inline-end:max(20px, env(safe-area-inset-right));
+  display:flex;flex-direction:column;gap:22px;
 }
 .topbar{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
-.topbar h1{font-size:clamp(24px,6vw,32px)}
-.topbar .date{font-size:13px;color:var(--text-3);margin-top:4px}
+.topbar h1{font-size:clamp(27px,7.4vw,36px);letter-spacing:-.035em;line-height:1.1}
+.topbar .date{font-size:13px;color:var(--text-3);margin-top:6px}
 .topbar-actions{margin-inline-start:auto;display:flex;gap:9px;align-items:center}
 
-/* شريط التبويب السفلي — على كل المقاسات */
+/* شريط تبويب عائم، وزر الإضافة في قلبه */
 .tabbar{
-  position:fixed;bottom:0;inset-inline:0;z-index:40;
-  background:var(--surface);
-  background:color-mix(in srgb,var(--surface) 94%,transparent);
-  backdrop-filter:blur(16px);
-  border-top:1px solid var(--line);
-  padding-bottom:env(safe-area-inset-bottom);
+  position:fixed;z-index:40;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  inset-inline:0;pointer-events:none;
 }
 .tabbar-in{
-  max-width:var(--col);margin-inline:auto;
-  display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px 10px;
+  pointer-events:auto;
+  max-width:min(var(--col), calc(100vw - 28px));margin-inline:auto;
+  display:grid;grid-template-columns:repeat(5,1fr);align-items:center;
+  gap:2px;padding:7px;border-radius:26px;
+  background:color-mix(in srgb,var(--surface) 82%,transparent);
+  backdrop-filter:blur(22px) saturate(160%);
+  border:1px solid var(--line-2);
+  box-shadow:var(--elev-3);
 }
 .tab{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:6px 0;min-height:52px;justify-content:center;
-  color:var(--text-3);font-size:10.5px;font-weight:700;transition:color .18s;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:9px 0 7px;border-radius:19px;min-height:50px;justify-content:center;
+  color:var(--text-3);font-size:10px;font-weight:700;
+  transition:color .2s, background .2s;
 }
-.tab[aria-current="true"]{color:var(--accent)}
-.tab .dot{
-  position:absolute;margin-top:-34px;width:4px;height:4px;border-radius:50%;
-  background:var(--accent);opacity:0;transition:opacity .2s;
-}
-.tab[aria-current="true"] .dot{opacity:1}
+.tab[aria-current="true"]{color:var(--accent);background:var(--accent-soft)}
+.tab svg{transition:transform .25s cubic-bezier(.2,.9,.3,1.3)}
+.tab[aria-current="true"] svg{transform:translateY(-1px) scale(1.06)}
 
-/* زر الإضافة العائم */
-.fab{
-  position:fixed;z-index:41;
-  /* يحاذي حافة عمود المحتوى متى اتسعت الشاشة، وإلا حافة الشاشة */
-  inset-inline-end:max(18px, calc((100vw - var(--col)) / 2 + 18px));
-  bottom:calc(84px + env(safe-area-inset-bottom));
-  width:58px;height:58px;border-radius:50%;
-  display:grid;place-items:center;
-  background:var(--accent);color:var(--on-accent);
-  box-shadow:0 14px 30px -8px var(--accent), var(--shadow-2);
-  transition:transform .16s;
+.tab-add{
+  display:grid;place-items:center;justify-self:center;
+  width:50px;height:50px;border-radius:17px;
+  background:linear-gradient(145deg,var(--accent),var(--accent-2));
+  color:var(--on-accent);
+  box-shadow:0 10px 24px -8px var(--accent-glow);
+  transition:transform .16s cubic-bezier(.2,.9,.3,1.4), box-shadow .2s;
 }
-.fab:active{transform:scale(.93)}
+.tab-add:active{transform:scale(.9)}
+.tab-add:hover{box-shadow:0 14px 30px -8px var(--accent-glow)}
 
 .btn{
   display:inline-flex;align-items:center;gap:8px;
@@ -238,8 +249,9 @@ button{cursor:pointer;background:none;border:0;padding:0}
   transition:transform .12s, box-shadow .2s, background .2s;
 }
 .btn:active{transform:translateY(1px)}
-.btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:0 8px 20px -10px var(--accent)}
-.btn-primary:hover{background:var(--accent-2)}
+.btn-primary{background:linear-gradient(145deg,var(--accent),var(--accent-2));color:var(--on-accent);
+  box-shadow:0 10px 24px -10px var(--accent-glow)}
+.btn-primary:hover{box-shadow:0 14px 30px -10px var(--accent-glow)}
 .btn-quiet{background:var(--surface);border-color:var(--line);color:var(--text-2)}
 .btn-quiet:hover{background:var(--surface-3);color:var(--text)}
 .btn-danger{background:var(--bad);color:#fff}
@@ -251,9 +263,20 @@ button{cursor:pointer;background:none;border:0;padding:0}
 }
 .icon-btn:hover{background:var(--surface-3);color:var(--text)}
 
-.view{display:none;flex-direction:column;gap:20px;animation:rise .32s cubic-bezier(.2,.7,.2,1)}
+.view{display:none;flex-direction:column;gap:20px}
 .view.on{display:flex}
-@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* دخول متدرّج: كل كتلة تتبع سابقتها بفارق يسير */
+.view.on > *{animation:rise .5s cubic-bezier(.16,.9,.24,1) backwards}
+.view.on > *:nth-child(1){animation-delay:.02s}
+.view.on > *:nth-child(2){animation-delay:.07s}
+.view.on > *:nth-child(3){animation-delay:.12s}
+.view.on > *:nth-child(4){animation-delay:.17s}
+.view.on > *:nth-child(n+5){animation-delay:.21s}
+.grid > *{animation:rise .45s cubic-bezier(.16,.9,.24,1) backwards}
+.grid > *:nth-child(2){animation-delay:.05s}
+.grid > *:nth-child(3){animation-delay:.1s}
+.grid > *:nth-child(n+4){animation-delay:.14s}
 
 .section-head{display:flex;align-items:baseline;gap:10px;margin-bottom:-4px}
 .section-head h2{font-size:16px}
@@ -263,9 +286,10 @@ button{cursor:pointer;background:none;border:0;padding:0}
 /* رأس قسم قابل للطي بعدّاد — كما في المرجع */
 .sec{
   display:flex;align-items:center;gap:11px;width:100%;text-align:start;
-  padding:14px 18px;border-radius:var(--r-lg);
-  background:var(--surface);border:1px solid var(--line);
-  box-shadow:var(--shadow-1);transition:border-color .18s,background .18s;
+  padding:15px 18px;border-radius:var(--r-lg);
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--line);
+  box-shadow:var(--elev-1);transition:border-color .2s,box-shadow .2s;
 }
 .sec:hover{border-color:var(--line-2)}
 .sec .ic{display:flex;color:var(--accent)}
@@ -283,8 +307,9 @@ button{cursor:pointer;background:none;border:0;padding:0}
    CARD
    ============================================================ */
 .card{
-  background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-xl);box-shadow:var(--shadow-1);
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--line);
+  border-radius:var(--r-xl);box-shadow:var(--elev-1);
   overflow:hidden;
 }
 .stack{display:flex;flex-direction:column;gap:14px}
@@ -374,6 +399,8 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
   color:var(--text-2);font-size:17px;font-weight:700;transition:background .15s,color .15s;
 }
 .step button:hover{background:var(--surface-3);color:var(--tc)}
+.step button:active{transform:scale(.9)}
+.step button{transition:background .15s,color .15s,transform .12s}
 .step .val{
   min-width:56px;line-height:44px;text-align:center;font-family:var(--font-num);
   font-weight:700;font-size:14px;border-inline:1px solid var(--line);
@@ -393,32 +420,87 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
   transition:background .2s,border-color .2s,color .2s,transform .15s;
 }
 .check:hover{border-color:var(--tc);transform:scale(1.06)}
+.check:active{transform:scale(.92)}
 /* nothing scheduled today is not the same as finished */
 /* ---- add bar: سطر واحد، لا بطاقة ولا أمثلة معروضة ---- */
 .addbar{position:relative}
 .addbar svg{
-  position:absolute;inset-inline-start:15px;top:15px;
+  position:absolute;inset-inline-start:16px;top:17px;
   color:var(--text-3);pointer-events:none;
 }
 .addbar input{
-  width:100%;padding:14px 18px;padding-inline-start:44px;
+  width:100%;padding:15px 18px;padding-inline-start:46px;
   border-radius:var(--r-lg);border:1px solid var(--line);
-  background:var(--surface);font-size:14.5px;box-shadow:var(--shadow-1);
-  transition:border-color .18s, box-shadow .18s;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  font-size:14.5px;box-shadow:var(--elev-1);
+  transition:border-color .2s, box-shadow .2s;
 }
 .addbar input:focus{
-  outline:none;border-color:var(--accent);
-  box-shadow:0 0 0 3px var(--accent-soft), var(--shadow-1);
+  outline:none;border-color:color-mix(in srgb,var(--accent) 60%,transparent);
+  box-shadow:0 0 0 4px var(--accent-soft), var(--elev-2);
 }
 .addbar input::placeholder{color:var(--text-3)}
 .addhint{font-size:11.5px;color:var(--text-3);margin-top:9px;padding-inline-start:4px}
 
 /* نبض اليوم: حلقة تقدم + سطرا ملخّص */
-.pulse{
-  display:flex;align-items:center;gap:16px;
-  background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-xl);padding:16px 18px;box-shadow:var(--shadow-1);
+/* ============================================================
+   HERO — المقياس القوسي، بطل شاشة يومك
+   ============================================================ */
+.hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--line);border-radius:var(--r-2xl);
+  box-shadow:var(--elev-2);
+  padding:26px 22px 22px;
+  display:flex;flex-direction:column;align-items:center;
 }
+.hero::after{                       /* وهج خفيف خلف القوس */
+  content:"";position:absolute;top:-48%;inset-inline:12%;height:78%;
+  background:radial-gradient(ellipse at 50% 100%, var(--accent-glow) 0%, transparent 66%);
+  opacity:.5;pointer-events:none;
+}
+.gauge{position:relative;width:212px;max-width:100%;height:126px}
+.gauge svg{display:block;width:100%;overflow:visible}
+.gauge-arc{transition:stroke-dashoffset 1s cubic-bezier(.2,.85,.25,1)}
+.gauge-core{
+  position:absolute;inset:0;top:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.gauge-n{
+  font-family:var(--font-num);font-weight:800;
+  font-size:clamp(42px,13vw,56px);line-height:.92;letter-spacing:-.06em;
+  color:var(--text);
+}
+.gauge-n.zero{color:var(--ok)}
+/* التدرّج على النص زينة — يُطبَّق فقط حيث يُدعم، وإلا بقي اللون الصلب */
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .gauge-n{
+    background:linear-gradient(160deg,var(--text),color-mix(in srgb,var(--text) 60%,var(--accent)));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .gauge-n.zero{
+    background:linear-gradient(160deg,var(--ok),color-mix(in srgb,var(--ok) 50%,var(--accent)));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+}
+.gauge-cap{font-size:12px;color:var(--text-3);margin-top:8px;letter-spacing:.01em}
+.hero-foot{
+  display:flex;align-items:center;justify-content:center;gap:0;
+  width:100%;margin-top:20px;padding-top:18px;border-top:1px solid var(--line);
+}
+.hstat{flex:1;text-align:center;position:relative}
+.hstat + .hstat::before{
+  content:"";position:absolute;inset-inline-start:0;top:12%;height:76%;
+  width:1px;background:var(--line);
+}
+.hstat b{
+  display:block;font-family:var(--font-num);font-size:19px;font-weight:800;
+  letter-spacing:-.03em;line-height:1.1;white-space:nowrap;
+}
+.hstat b em{font-style:normal;opacity:.42;font-size:.72em}
+.hstat span{display:block;font-size:10.5px;color:var(--text-3);margin-top:5px}
+.hstat.warn b{color:var(--brass)}
+
 .ring{position:relative;width:64px;height:64px;flex:none}
 .ring svg{transform:rotate(-90deg);display:block}
 /* flex + baseline: مع grid يصير النص و<small> عنصرين في صفّين */
@@ -475,16 +557,17 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
 .tcard{
   --tc:var(--c-teal);
   position:relative;display:flex;flex-direction:column;min-width:0;
-  background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-1);
-  transition:border-color .2s, box-shadow .25s;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--line);
+  border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--elev-1);
+  transition:border-color .22s, box-shadow .28s, transform .22s;
 }
 /* الحدّ العلوي الملوّن: هوية المهمة بلمحة */
 .tcard::before{
   content:"";position:absolute;top:0;inset-inline:0;height:3px;background:var(--tc);
 }
 .tcard.done::before{background:var(--ok)}
-.tcard:hover{box-shadow:var(--shadow-2);border-color:var(--line-2)}
+.tcard:hover{box-shadow:var(--elev-2);border-color:var(--line-2);transform:translateY(-2px)}
 .tcard.idle{opacity:.55}
 
 .tc-top{display:flex;align-items:flex-start;gap:13px;padding:20px 20px 0}
@@ -538,8 +621,9 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
    REFLECTION — تأمل مبني على أرقام اليوم
    ============================================================ */
 .refl{
-  background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-xl);box-shadow:var(--shadow-1);overflow:hidden;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--line);
+  border-radius:var(--r-xl);box-shadow:var(--elev-1);overflow:hidden;
 }
 .refl-head{
   display:flex;align-items:center;gap:13px;padding:16px 20px;width:100%;
@@ -595,7 +679,7 @@ button.refl-head:hover{background:var(--surface-2)}
 .ins{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
 .ins-card{
   background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-lg);padding:17px 18px;box-shadow:var(--shadow-1);
+  border-radius:var(--r-lg);padding:17px 18px;box-shadow:var(--elev-1);
   display:flex;flex-direction:column;gap:12px;
 }
 .ins-k{
@@ -692,7 +776,7 @@ button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
 .strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
-  padding:15px 16px;display:flex;flex-direction:column;gap:3px;box-shadow:var(--shadow-1);
+  padding:15px 16px;display:flex;flex-direction:column;gap:3px;box-shadow:var(--elev-1);
 }
 .kpi .k{font-size:11.5px;color:var(--text-3);letter-spacing:.02em}
 .kpi .v{font-family:var(--font-num);font-size:26px;font-weight:700;letter-spacing:-.04em;line-height:1.1}
@@ -771,7 +855,7 @@ button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
 .modal{
   width:min(620px,100%);max-height:min(88dvh,900px);overflow-y:auto;
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);
-  box-shadow:var(--shadow-pop);animation:pop .28s cubic-bezier(.2,.8,.2,1);
+  box-shadow:var(--elev-3);animation:pop .28s cubic-bezier(.2,.8,.2,1);
 }
 @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
 .modal-head{
@@ -829,7 +913,7 @@ button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
 .switch .track::after{
   content:"";position:absolute;top:2px;inset-inline-start:2px;
   width:19px;height:19px;border-radius:50%;background:var(--surface);
-  box-shadow:var(--shadow-1);transition:transform .22s cubic-bezier(.3,.8,.3,1);
+  box-shadow:var(--elev-1);transition:transform .22s cubic-bezier(.3,.8,.3,1);
 }
 .switch input{position:absolute;opacity:0;width:0;height:0}
 .switch input:checked + .track{background:var(--accent);border-color:var(--accent)}
@@ -857,7 +941,7 @@ button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
   display:flex;align-items:center;gap:12px;
   background:var(--text);color:var(--bg);
   padding:11px 16px;border-radius:99px;font-size:13.5px;font-weight:600;
-  box-shadow:var(--shadow-pop);pointer-events:auto;
+  box-shadow:var(--elev-3);pointer-events:auto;
   animation:toastIn .3s cubic-bezier(.2,.8,.2,1);
 }
 @keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -896,6 +980,7 @@ button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
       </div>
       <span class="spacer"></span>
       <button class="icon-btn" id="btnTheme" title="تبديل المظهر" aria-label="تبديل المظهر"></button>
+      <button class="icon-btn" id="btnSet" data-act="nav" data-v="set" title="الإعدادات" aria-label="الإعدادات"></button>
     </div>
   </header>
 
@@ -916,9 +1001,6 @@ button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
   </main>
 </div>
 
-<button class="fab" id="fab" aria-label="مهمة جديدة">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-</button>
 <nav class="tabbar" id="tabbar"></nav>
 <div id="modalRoot"></div>
 <div class="toast-wrap" id="toastWrap"></div>
@@ -1382,7 +1464,7 @@ const rangeHtml = (a, b) => `<bdi dir="ltr">${a.getDate() === b.getDate()
 
 /* returns HTML (already safe — dates only) */
 function slotLabel(s) {
-  if (s.gran === "day")   return `${DAY_SHORT[s.start.getDay()]} <bdi dir="ltr">${s.start.getDate()}</bdi>`;
+  if (s.gran === "day")   return `${DAY_SHORT[s.start.getDay()].slice(0, 3)} <bdi dir="ltr">${s.start.getDate()}</bdi>`;
   if (s.gran === "week")  return rangeHtml(s.start, s.end);
   if (s.gran === "month") return esc(MONTHS[s.start.getMonth()]);
   return "الفترة";
@@ -1933,23 +2015,44 @@ function renderToday() {
          ويقسّمها عليك حتى يوصل لنصيب اليوم.</p></div>`;
   }
 
-  const R = 26, C = 2 * Math.PI * R;
+  /* قوس مفتوح 250° — أقرب إلى عدّاد حقيقي من الحلقة المغلقة */
+  const RA = 78, SW = 250, START = 145;
+  const rad = a => (a * Math.PI) / 180;
+  const pt = a => [110 + RA * Math.cos(rad(a)), 100 + RA * Math.sin(rad(a))];
+  const arcPath = frac => {
+    const [x0, y0] = pt(START), [x1, y1] = pt(START + SW * frac);
+    return `M ${x0.toFixed(1)} ${y0.toFixed(1)} A ${RA} ${RA} 0 ${SW * frac > 180 ? 1 : 0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+  };
+  const LEN = 2 * Math.PI * RA * (SW / 360);
+
   const summary = `
-  <div class="pulse">
-    <div class="ring">
-      <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="32" cy="32" r="${R}" fill="none" stroke="var(--surface-3)" stroke-width="7"/>
-        <circle cx="32" cy="32" r="${R}" fill="none" stroke="var(--accent)" stroke-width="7"
-                stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}"
-                stroke-dashoffset="${(C * (1 - pct)).toFixed(1)}"/>
+  <div class="hero">
+    <div class="gauge">
+      <svg viewBox="0 0 220 132" role="img"
+           aria-label="أنجزت ${doneCount} من ${board.length} مهام اليوم">
+        <defs>
+          <linearGradient id="gg" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="var(--accent-2)"/>
+            <stop offset="1" stop-color="var(--accent)"/>
+          </linearGradient>
+        </defs>
+        <path d="${arcPath(1)}" fill="none" stroke="var(--surface-3)"
+              stroke-width="13" stroke-linecap="round"/>
+        <path class="gauge-arc" d="${arcPath(1)}" fill="none" stroke="url(#gg)"
+              stroke-width="13" stroke-linecap="round"
+              stroke-dasharray="${LEN.toFixed(1)}"
+              stroke-dashoffset="${(LEN * (1 - pct)).toFixed(1)}"/>
       </svg>
-      <span class="ring-n">${Math.round(pct * 100)}<small>%</small></span>
+      <div class="gauge-core">
+        <div class="gauge-n ${unitsToday === 0 ? "zero" : ""}">${fmt(unitsToday)}</div>
+        <div class="gauge-cap">${unitsToday === 0 ? "خلصت نصيب اليوم" : "وحدة متبقية اليوم"}</div>
+      </div>
     </div>
-    <div class="pulse-txt">
-      <b>${doneCount} من ${board.length} مهام</b>
-      <span>باقٍ <i class="num">${fmt(unitsToday)}</i> وحدة اليوم${
-        st.cur ? ` · <i class="num">${st.cur}</i> يوم متتالٍ` : ""}${
-        behind ? ` · <i class="num" style="color:var(--brass)">${behind}</i> أُعيد توزيعها` : ""}</span>
+    <div class="hero-foot">
+      <div class="hstat"><b><bdi dir="ltr">${doneCount}<em>/${board.length}</em></bdi></b><span>مهام</span></div>
+      <div class="hstat"><b>${Math.round(pct * 100)}%</b><span>إنجاز</span></div>
+      <div class="hstat"><b>${st.cur}</b><span>يوم متتالٍ</span></div>
+      ${behind ? `<div class="hstat warn"><b>${behind}</b><span>أُعيد توزيعها</span></div>` : ""}
     </div>
   </div>`;
 
@@ -2594,15 +2697,23 @@ const NAV = [
   { id:"stats", label:"الإحصاءات", icon:"chart", title:"الإحصاءات" },
   { id:"set",   label:"الإعدادات", icon:"gear",  title:"الإعدادات" }
 ];
+/* أربعة تبويبات وزر الإضافة بينها؛ الإعدادات في الشريط العلوي */
+const TABS = ["today", "tasks", null, "cal", "stats"];
 
 function renderNav() {
-  document.getElementById("tabbar").innerHTML = `<div class="tabbar-in">` + NAV.map(x => `
-    <button class="tab" data-act="nav" data-v="${x.id}" aria-current="${view === x.id}">
-      <span class="dot"></span>${icon(x.icon, 20)}<span>${x.label}</span>
-    </button>`).join("") + `</div>`;
+  document.getElementById("tabbar").innerHTML = `<div class="tabbar-in">` + TABS.map(id => {
+    if (!id) return `<button class="tab-add" data-act="add" aria-label="مهمة جديدة">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>`;
+    const x = NAV.find(n => n.id === id);
+    return `<button class="tab" data-act="nav" data-v="${x.id}" aria-current="${view === x.id}">
+      ${icon(x.icon, 20)}<span>${x.label}</span></button>`;
+  }).join("") + `</div>`;
+  const g = document.getElementById("btnSet");
+  if (g) g.setAttribute("aria-current", view === "set");
 }
 
-const VERSION_TXT = "v8";
+const VERSION_TXT = "v9";
 const WEEK_STARTS = [[0, "الأحد"], [1, "الاثنين"], [6, "السبت"]];
 const THEMES = [["dark", "داكن"], ["light", "فاتح"], ["auto", "حسب النظام"]];
 
@@ -2706,6 +2817,7 @@ function applyTheme() {
   if (th === "auto") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", th);
   const dark = th === "dark" || (th === "auto" && matchMedia("(prefers-color-scheme:dark)").matches);
   document.getElementById("btnTheme").innerHTML = icon(dark ? "sun" : "moon", 17);
+  document.getElementById("btnSet").innerHTML = icon("gear", 17);
 }
 
 function render() {
@@ -2744,6 +2856,7 @@ document.addEventListener("click", e => {
 
   switch (act) {
     case "nav":       view = el.dataset.v; render(); window.scrollTo({ top: 0, behavior: "smooth" }); break;
+    case "add":        openForm(); break;
     case "reflToggle": reflOpen = !reflOpen; render(); break;
     case "bwk": {
       const n = Number(el.dataset.v);
@@ -2928,7 +3041,6 @@ document.addEventListener("keydown", e => {
   if (e.key === "Enter" && draft && e.target.tagName === "INPUT" && e.target.type !== "checkbox") { e.preventDefault(); saveForm(); }
 });
 
-document.getElementById("fab").onclick = () => openForm();
 document.getElementById("btnTheme").onclick = () => {
   const order = ["auto", "light", "dark"];
   S.settings.theme = order[(order.indexOf(S.settings.theme) + 1) % 3];
