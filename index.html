@@ -476,6 +476,155 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
   text-decoration:underline;text-underline-offset:3px;
 }
 
+/* ============================================================
+   CARD GRID
+   ============================================================ */
+/* align-items:start يمنع البطاقة المطوية من التمدد لتساوي جارتها المفتوحة */
+/* min(...,100%) وإلا فرَض الحد الأدنى عرضًا أكبر من الشاشة على الجوال */
+.grid{display:grid;gap:15px;align-items:start;
+  grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr))}
+.grid.wide{grid-template-columns:repeat(auto-fill,minmax(min(460px,100%),1fr))}
+
+.tcard{
+  --tc:var(--c-teal);
+  position:relative;display:flex;flex-direction:column;min-width:0;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-1);
+  transition:border-color .2s, box-shadow .25s, transform .18s;
+}
+.tcard::before{
+  content:"";position:absolute;top:0;inset-inline:0;height:3px;
+  background:var(--tc);
+}
+.tcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);border-color:var(--line-2)}
+.tcard.done::before{background:var(--ok)}
+.tcard.idle{opacity:.66}
+.tcard.idle:hover{transform:none}
+
+.tc-head{display:flex;align-items:flex-start;gap:11px;padding:18px 18px 0}
+.tc-title{
+  font-family:var(--font-display);font-weight:800;font-size:15.5px;
+  line-height:1.45;flex:1;min-width:0;letter-spacing:-.012em;
+}
+.tcard.done .tc-title{color:var(--text-3)}
+.tc-tags{display:flex;flex-wrap:wrap;gap:6px;padding:11px 18px 0}
+
+.tc-figure{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:12px;padding:15px 18px 0;
+}
+.tc-big{display:flex;align-items:baseline;gap:7px;min-width:0}
+.tc-big b{
+  font-family:var(--font-num);font-size:36px;font-weight:700;
+  letter-spacing:-.05em;color:var(--tc);line-height:.95;
+}
+.tc-big.ok b{color:var(--ok)}
+.tc-big i{font-style:normal;font-size:12.5px;color:var(--text-3);line-height:1.3}
+.tc-side{text-align:end;font-size:11px;color:var(--text-3);line-height:1.5;max-width:47%}
+.tc-side b{display:block;font-family:var(--font-num);font-size:14px;color:var(--text-2);font-weight:700}
+
+.tc-bar{padding:13px 18px 0}
+.tc-note{padding:9px 18px 0;font-size:11.5px;color:var(--text-3);line-height:1.55}
+.tc-meter{padding:15px 18px 2px}
+.tc-foot{
+  margin-top:auto;display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  padding:14px 18px;margin-top:16px;
+  border-top:1px solid var(--line);background:var(--surface-2);
+}
+.tc-foot .step{background:var(--surface)}
+
+.disclose{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px;font-size:12px;font-weight:700;color:var(--text-3);
+  border-top:1px dashed var(--line);transition:color .18s,background .18s;
+}
+.disclose:hover{color:var(--accent);background:var(--surface-2)}
+.disclose svg{transition:transform .25s}
+.disclose[aria-expanded="true"] svg{transform:rotate(180deg)}
+.tc-detail{padding:14px 18px 4px;border-top:1px solid var(--line);background:var(--surface-2)}
+
+/* ============================================================
+   REFLECTION — تأمل مبني على أرقام اليوم
+   ============================================================ */
+.refl{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);box-shadow:var(--shadow-1);overflow:hidden;
+}
+.refl-head{
+  display:flex;align-items:center;gap:12px;padding:16px 20px;
+  border-bottom:1px solid var(--line);
+}
+.refl-head h3{font-size:15.5px;flex:1}
+.refl-head .sub{font-size:11.5px;color:var(--text-3);font-weight:500;display:block;margin-top:3px}
+.refl-body{padding:18px 20px;display:flex;flex-direction:column;gap:18px}
+
+/* the day's facts, so reflection isn't guesswork */
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.fact{background:var(--surface-2);padding:11px 13px}
+.fact .k{font-size:10.5px;color:var(--text-3);letter-spacing:.02em}
+.fact .v{font-family:var(--font-num);font-size:19px;font-weight:700;letter-spacing:-.03em;margin-top:2px}
+.fact .v small{font-size:11px;color:var(--text-3);font-weight:600}
+
+.energy{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.energy button{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:12px 4px 10px;border-radius:14px;
+  border:1px solid var(--line);background:var(--surface-2);
+  font-size:10.5px;font-weight:700;color:var(--text-3);
+  transition:all .17s;
+}
+.energy button:hover{border-color:var(--line-2);color:var(--text-2)}
+.energy button[aria-pressed="true"]{
+  background:var(--accent-soft);border-color:var(--accent);color:var(--accent);
+}
+.lvl{display:flex;align-items:flex-end;gap:2.5px;height:18px}
+.lvl i{width:4px;border-radius:2px;background:var(--line-2);display:block}
+.energy button[aria-pressed="true"] .lvl i.on{background:var(--accent)}
+.lvl i.on{background:var(--text-3)}
+
+.refl-note{
+  width:100%;padding:11px 13px;border-radius:var(--r-md);resize:vertical;min-height:44px;
+  border:1px solid var(--line);background:var(--surface-2);font-family:inherit;line-height:1.6;
+}
+.refl-note:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+
+.saved-line{
+  display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ok);
+  background:var(--ok-soft);padding:9px 13px;border-radius:var(--r-md);
+}
+
+/* ============================================================
+   INSIGHTS
+   ============================================================ */
+.ins{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.ins-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:17px 18px;box-shadow:var(--shadow-1);
+  display:flex;flex-direction:column;gap:12px;
+}
+.ins-k{
+  font-size:10.5px;font-weight:800;letter-spacing:.07em;color:var(--text-3);
+}
+.ins-v{font-size:14.5px;line-height:1.65;color:var(--text-2)}
+.ins-v b{color:var(--text);font-weight:800}
+.ins-v .num{color:var(--accent);font-weight:700}
+
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;align-items:end}
+.wk .c{grid-row:1;height:56px;border-radius:8px;background:var(--surface-3);position:relative;overflow:hidden}
+.wk .c i{position:absolute;inset-inline:0;bottom:0;height:var(--p);background:var(--accent);opacity:.85}
+.wk .c.best i{background:var(--ok)}
+.wk .c.worst i{background:var(--bad)}
+.wk .l{grid-row:2;text-align:center;font-size:10px;color:var(--text-3)}
+.wk .l.best{color:var(--ok);font-weight:800}
+.wk .l.worst{color:var(--bad);font-weight:800}
+
+.blk{display:flex;flex-direction:column;gap:8px}
+.blk-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;font-size:13px}
+.blk-bar{height:7px;border-radius:99px;background:var(--surface-3);overflow:hidden;margin-top:5px}
+.blk-bar i{display:block;height:100%;background:var(--brass);border-radius:99px}
+.blk-n{font-family:var(--font-num);font-weight:700;color:var(--text-2);font-size:12.5px}
+
 .empty{
   text-align:center;padding:56px 24px;color:var(--text-3);
   border:1px dashed var(--line-2);border-radius:var(--r-xl);background:var(--surface-2);
@@ -834,9 +983,11 @@ const DEFAULTS = { weekStart: 0, theme: "auto" };
 let S = {
   settings: Object.assign({}, DEFAULTS, Store.get("mq.settings", {})),
   tasks:    Store.get("mq.tasks", null),
-  progress: Store.get("mq.progress", {})
+  progress: Store.get("mq.progress", {}),
+  reflect:  Store.get("mq.reflect", {})
 };
 let view = "today";
+let expanded = new Set();
 let calRef = new Date();
 let calSel = null;
 let lastAction = null;
@@ -846,6 +997,7 @@ const save = () => {
   Store.set("mq.settings", S.settings);
   Store.set("mq.tasks", S.tasks);
   Store.set("mq.progress", S.progress);
+  Store.set("mq.reflect", S.reflect);
 };
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -1552,6 +1704,174 @@ function readCard(r) {
   </div>`;
 }
 
+/* ============================================================
+   REFLECTION
+   تأمل مربوط بأرقام اليوم، ومخرجاته تتحول إلى أنماط في «الإحصاءات»
+   ============================================================ */
+const BLOCKERS = ["ضيق الوقت", "تشتت", "إرهاق", "تسويف", "ظرف طارئ", "الهدف كبير", "انشغال بالعمل", "صحة"];
+const ENERGY = ["منخفضة جدًا", "منخفضة", "متوسطة", "عالية", "ممتازة"];
+
+let reflDraft = null;      // مسودة اليوم قبل الحفظ
+
+/* الحالة الحالية: المسودة، وإلا المحفوظ، وإلا فارغ */
+function reflCurrent() {
+  if (reflDraft) return reflDraft;
+  const s = S.reflect[key(today())];
+  return s ? { energy: s.energy || 0, blocks: [...(s.blocks || [])], win: s.win || "", fix: s.fix || "" }
+           : { energy: 0, blocks: [], win: "", fix: "" };
+}
+
+function dayFacts(d) {
+  const board = todayBoard();
+  let planned = 0, done = 0, hit = 0, n = 0;
+  board.forEach(b => {
+    const goal = round2(b.done + b.todo);
+    if (goal <= 0 && b.done <= 0) return;
+    n++; planned += goal; done += b.done;
+    if (b.todo <= 0) hit++;
+  });
+  return { n, hit, planned: round2(planned), done: round2(done),
+           pct: planned > 0 ? Math.min(1, done / planned) : (n ? 1 : 0) };
+}
+
+function renderReflect() {
+  const dk = key(today());
+  const saved = S.reflect[dk];
+  const f = dayFacts();
+  const d = reflDraft || (saved ? JSON.parse(JSON.stringify(saved)) : { energy: 0, blocks: [], win: "", fix: "" });
+
+  const facts = `
+    <div class="facts">
+      <div class="fact"><div class="k">أنجزت اليوم</div>
+        <div class="v">${fmt(f.done)}<small> / ${fmt(f.planned)}</small></div></div>
+      <div class="fact"><div class="k">مهام أُقفلت</div>
+        <div class="v">${f.hit}<small> / ${f.n}</small></div></div>
+      <div class="fact"><div class="k">نسبة اليوم</div>
+        <div class="v">${Math.round(f.pct * 100)}<small>%</small></div></div>
+    </div>`;
+
+  const energy = `
+    <div class="field">
+      <label>طاقتك اليوم</label>
+      <div class="energy">
+        ${ENERGY.map((lab, i) => `
+          <button data-act="energy" data-v="${i + 1}" aria-pressed="${d.energy === i + 1}" title="${lab}">
+            <span class="lvl">${Array.from({ length: 5 }, (_, k) =>
+              `<i class="${k <= i ? "on" : ""}" style="height:${5 + k * 3}px"></i>`).join("")}</span>
+            ${lab}
+          </button>`).join("")}
+      </div>
+    </div>`;
+
+  const blocks = `
+    <div class="field">
+      <label>وش عطّلك؟ <span class="note">(اختياري — أكثر من واحد)</span></label>
+      <div class="chips">
+        ${BLOCKERS.map(bk => `<button class="chip" data-act="block" data-v="${esc(bk)}"
+            aria-pressed="${d.blocks.includes(bk)}">${bk}</button>`).join("")}
+      </div>
+    </div>`;
+
+  return `
+  <div class="section-head" style="margin-top:8px"><h2>تأمل اليوم</h2>
+    <span class="hint">دقيقة واحدة — تتحول لاحقًا إلى أنماط في «الإحصاءات»</span>
+    <span class="line"></span></div>
+  <div class="refl">
+    <div class="refl-head">
+      ${icon("spark", 17)}
+      <div style="flex:1">
+        <h3>${DAY_FULL[today().getDay()]} ${ltr(today().getDate())} ${MONTHS[today().getMonth()]}</h3>
+        <span class="sub">${saved ? "محفوظ — تقدر تعدّله" : "سجّل يومك وأنت تشوف أرقامه"}</span>
+      </div>
+      ${saved ? `<button class="link-btn danger" data-act="reflDel">حذف</button>` : ""}
+    </div>
+    <div class="refl-body">
+      ${facts}
+      ${energy}
+      ${blocks}
+      <div class="row2">
+        <div class="field">
+          <label for="rWin">وش مشى صح؟</label>
+          <textarea class="refl-note" id="rWin" data-r="win" rows="2"
+            placeholder="أصغر شيء نجح معك اليوم">${esc(d.win)}</textarea>
+        </div>
+        <div class="field">
+          <label for="rFix">وش تعدّله بكرة؟</label>
+          <textarea class="refl-note" id="rFix" data-r="fix" rows="2"
+            placeholder="تغيير واحد قابل للتنفيذ">${esc(d.fix)}</textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-primary" data-act="reflSave">${saved ? "تحديث" : "احفظ التأمل"}</button>
+        ${saved ? `<span class="saved-line">${icon("check", 14)} محفوظ</span>` : ""}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   INSIGHTS — الأنماط المستخرجة من التأملات + سجل الإنجاز
+   ============================================================ */
+function insights() {
+  const t = today();
+  const out = {};
+
+  /* 1 — الأداء بحسب يوم الأسبوع (٨ أسابيع) */
+  const byDay = Array.from({ length: 7 }, () => ({ sum: 0, n: 0 }));
+  for (let i = 1; i <= 56; i++) {
+    const d = addDays(t, -i);
+    const s = dayScore(d);
+    if (!s) continue;
+    const b = byDay[d.getDay()];
+    b.sum += s.score; b.n++;
+  }
+  const avail = byDay.map((b, i) => ({ i, avg: b.n ? b.sum / b.n : null, n: b.n })).filter(x => x.avg != null);
+  if (avail.length >= 3) {
+    const best = avail.reduce((a, b) => (b.avg > a.avg ? b : a));
+    const worst = avail.reduce((a, b) => (b.avg < a.avg ? b : a));
+    out.week = { byDay, best: best.i, worst: worst.i, bestAvg: best.avg, worstAvg: worst.avg };
+  }
+
+  /* 2 — أكثر ما يعطّلك */
+  const counts = {};
+  let refN = 0, eHi = { s: 0, n: 0 }, eLo = { s: 0, n: 0 };
+  Object.keys(S.reflect).forEach(dk => {
+    const r = S.reflect[dk];
+    refN++;
+    (r.blocks || []).forEach(b => { counts[b] = (counts[b] || 0) + 1; });
+    if (typeof r.score === "number" && r.energy) {
+      if (r.energy >= 4) { eHi.s += r.score; eHi.n++; }
+      else if (r.energy <= 2) { eLo.s += r.score; eLo.n++; }
+    }
+  });
+  out.refN = refN;
+  const blocks = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 4);
+  if (blocks.length) out.blocks = { list: blocks, max: blocks[0][1] };
+  if (eHi.n >= 2 && eLo.n >= 2) out.energy = { hi: eHi.s / eHi.n, lo: eLo.s / eLo.n, nHi: eHi.n, nLo: eLo.n };
+
+  /* 3 — دقة التقدير: كم من الهدف تُغلق فعليًا في الفترات المنتهية */
+  let ratio = 0, rn = 0;
+  liveTasks().forEach(task => {
+    for (let k = 1; k <= 4; k++) {
+      const ref = periodBack(task.period, k);
+      if (!ref || ref < parseKey(task.created)) break;
+      const c = compute(task, ref);
+      if (c.target <= 0 || c.range.end >= t) continue;
+      ratio += Math.min(1.5, c.doneTotal / c.target); rn++;
+    }
+  });
+  if (rn >= 2) out.estimate = { avg: ratio / rn, n: rn };
+
+  return out;
+}
+
+/* تاريخ يقع داخل الفترة السابقة رقم k — بالمشي فترةً فترة، لا بتقريب الأيام */
+function periodBack(period, k) {
+  let d = addDays(periodRange(period, today()).start, -1);
+  for (let i = 1; i < k; i++) d = addDays(periodRange(period, d).start, -1);
+  return d;
+}
+
 function renderToday() {
   const board = todayBoard();
   const t = today();
@@ -1587,43 +1907,56 @@ function renderToday() {
          ويقسّمها عليك حتى يوصل لنصيب اليوم.</p></div>`;
   }
 
-  const rows = board.map(b => {
+  const cards = board.map(b => {
     const { task, c, slot } = b;
     const per = PERIODS[task.period];
-    const unitTxt = slot.gran === "day" ? "اليوم" : slot.gran === "week" ? "هذا الأسبوع" : slot.gran === "month" ? "هذا الشهر" : per.short;
+    const when = slot.gran === "day" ? "اليوم"
+               : slot.gran === "week" ? "هذا الأسبوع"
+               : slot.gran === "month" ? "هذا الشهر" : per.short;
     const stt = STATUS_TAG[c.status];
     return `
-    <div class="trow ${b.complete ? "complete" : ""} ${b.idle ? "idle" : ""}" style="--tc:${colorVar(task.color)}">
-      <button class="check" data-act="toggle" data-task="${task.id}" aria-label="إنهاء نصيب ${unitTxt}">
-        ${icon("check", 17)}
-      </button>
-      <div>
-        <div class="trow-title">${esc(task.title)}</div>
-        <div class="trow-meta">
-          <span class="tag accent">${per.label}</span>
-          ${c.status !== "ontrack" ? `<span class="tag ${stt.cls}">${stt.txt}</span>` : ""}
-          <span>باقٍ في ${per.short}: <span class="num">${fmt(c.remaining)}</span> من ${fmt(c.target)} ${esc(task.unit)}</span>
+    <article class="tcard ${b.complete ? "done" : ""} ${b.idle ? "idle" : ""}" style="--tc:${colorVar(task.color)}">
+      <div class="tc-head">
+        <button class="check" data-act="toggle" data-task="${task.id}"
+                aria-label="إنهاء نصيب ${when} من ${esc(task.title)}">${icon("check", 17)}</button>
+        <h3 class="tc-title">${esc(task.title)}</h3>
+      </div>
+      <div class="tc-figure">
+        <div class="tc-big ${b.complete ? "ok" : ""}">
+          <b>${b.idle ? "—" : fmt(b.todo)}</b>
+          <i>${b.idle ? `لا شيء<br>مطلوب ${when}` : `${esc(task.unit)}<br>${when}`}</i>
+        </div>
+        <div class="tc-side">
+          <b>${fmt(c.remaining)}</b>
+          باقٍ من ${fmt(c.target)} في ${per.short}
         </div>
       </div>
-      <div class="trow-right">
-        <div class="mini-goal">
-          <b>${b.idle ? "—" : fmt(b.todo)}</b>
-          <span>${b.idle ? "لا شيء اليوم" : `${esc(task.unit)} ${unitTxt}`}</span>
-        </div>
+      <div class="tc-bar">
+        <div class="bar ${c.remaining === 0 ? "done" : ""}"><i style="width:${(c.pct * 100).toFixed(1)}%"></i></div>
+      </div>
+      <div class="tc-tags" style="padding-top:12px">
+        <span class="tag accent">${per.label}</span>
+        ${c.status !== "ontrack" ? `<span class="tag ${stt.cls}">${stt.txt}</span>` : ""}
+        ${b.done > 0 ? `<span class="tag ok">أنجزت ${fmt(b.done)}</span>` : ""}
+      </div>
+      <div class="tc-foot">
         <div class="step">
           <button data-act="dec" data-task="${task.id}" aria-label="إنقاص">−</button>
           <span class="val">${fmt(b.done)}</span>
           <button data-act="inc" data-task="${task.id}" aria-label="زيادة">+</button>
         </div>
+        <span class="spacer"></span>
+        <button class="link-btn" data-act="edit" data-task="${task.id}">تعديل</button>
       </div>
-    </div>`;
+    </article>`;
   }).join("");
 
   return magicBar() + strip + `
     <div class="section-head"><h2>نصيب اليوم</h2>
       <span class="hint">${DAY_FULL[t.getDay()]} — ما يلزمك فعله الآن، محسوبًا من كل فترة</span>
       <span class="line"></span></div>
-    <div class="today-grid">${rows}</div>`;
+    <div class="grid">${cards}</div>
+    ${renderReflect()}`;
 }
 
 function renderTasks() {
@@ -1632,19 +1965,22 @@ function renderTasks() {
     return `<div class="empty"><h3>لا توجد مهام بعد</h3>
       <p>ابدأ بمهمة مثل «إنهاء 10 محاضرات هذا الأسبوع» واختر تقسيمها على الأيام.</p></div>`;
   }
-  return tasks.map(task => {
+  const cards = tasks.map(task => {
     const c = compute(task);
     const per = PERIODS[task.period], stt = STATUS_TAG[c.status];
     const gran = groupBy(task.period, task.split);
-    const each = c.slots.filter(s => !s.rest);
-    const avg = each.length ? c.remaining / Math.max(1, each.filter(s => s.end >= today()).length) : 0;
+    const ahead = c.slots.filter(s => !s.rest && s.end >= today());
+    const avg = c.remaining / Math.max(1, ahead.length);
+    const open = expanded.has(task.id);
 
-    let body = "";
-    if (c.slots.length <= 1) {
-      body = "";
-    } else if (gran) {
-      const groups = makeGroups(c.slots, gran);
-      body = `<div class="grp">` + groups.map(g => `
+    /* البطاقة تعرض النظرة المجمّعة، والتفصيل يُطوى حتى لا تزدحم */
+    const band = gran ? makeGroups(c.slots, gran) : c.slots;
+    const summary = c.slots.length <= 1 ? ""
+      : `<div class="dist-scroll">${meter(c, band, { clickable: !gran })}</div>`;
+
+    let detail = "";
+    if (open && gran) {
+      detail = `<div class="grp">` + makeGroups(c.slots, gran).map(g => `
         <div class="grp-row ${g.now ? "now" : ""}">
           <div>
             <div class="grp-name">${gran === "week"
@@ -1654,61 +1990,66 @@ function renderTasks() {
           </div>
           <div class="dist-scroll">${meter(c, g.slots, { clickable: true })}</div>
         </div>`).join("") + `</div>`;
-    } else {
-      body = `<div class="dist-scroll">${meter(c, c.slots, { clickable: true })}</div>`;
     }
 
     return `
-    <article class="card task" style="--tc:${colorVar(task.color)}">
-      <div class="task-head">
-        <span class="task-dot"></span>
-        <div class="task-id">
-          <div class="task-title">${esc(task.title)}</div>
-          <div class="task-tags">
-            <span class="tag accent">${per.label}</span>
-            <span class="tag">${SPLITS[task.split].label}</span>
-            <span class="tag">${esc(periodTitle(task.period, today()))}</span>
-            ${c.status !== "ontrack" ? `<span class="tag ${stt.cls}">${stt.txt}</span>` : ""}
-            ${task.rest && task.rest.length ? `<span class="tag">راحة: ${task.rest.map(d => DAY_SHORT[d]).join("، ")}</span>` : ""}
-          </div>
-          <div style="margin-top:13px" class="bar ${c.remaining === 0 ? "done" : ""}">
-            <i style="width:${(c.pct * 100).toFixed(1)}%"></i>
-            ${c.pacePct > 0 && c.pacePct < 1 ? `<span class="pace" style="inset-inline-start:${(c.pacePct * 100).toFixed(1)}%" title="المفترض إنجازه قبل اليوم"></span>` : ""}
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-top:7px;font-size:11.5px;color:var(--text-3)">
-            <span>أنجزت <b class="num" style="color:var(--text-2)">${fmt(c.doneTotal)}</b> من ${fmt(c.target)}</span>
-            <span>${c.daysLeft > 0 ? `${c.daysLeft} يوم متبقي في الفترة` : "انتهت الفترة"}</span>
-          </div>
+    <article class="tcard" style="--tc:${colorVar(task.color)}">
+      <div class="tc-head">
+        <h3 class="tc-title">${esc(task.title)}</h3>
+      </div>
+      <div class="tc-tags">
+        <span class="tag accent">${per.label}</span>
+        <span class="tag">${SPLITS[task.split].label}</span>
+        ${c.status !== "ontrack" ? `<span class="tag ${stt.cls}">${stt.txt}</span>` : ""}
+        ${task.rest && task.rest.length ? `<span class="tag">راحة: ${task.rest.map(d => DAY_SHORT[d]).join("، ")}</span>` : ""}
+      </div>
+
+      <div class="tc-figure">
+        <div class="tc-big ${c.remaining === 0 ? "ok" : ""}">
+          <b>${fmt(c.remaining)}</b>
+          <i>${esc(task.unit)}<br>باقٍ من ${fmt(c.target)}</i>
         </div>
-        <div class="remain">
-          <span class="remain-n ${c.remaining === 0 ? "done" : ""}">${fmt(c.remaining)}</span>
-          <div class="remain-cap">باقٍ من <b>${fmt(c.target)}</b> ${esc(task.unit)}</div>
+        <div class="tc-side">
+          <b>${fmt(c.doneTotal)}</b>
+          أنجزت في ${esc(periodTitle(task.period, today()))}
         </div>
       </div>
 
-      ${body ? `<div class="dist-block">
-        <div class="dist-legend">
-          <span>${SPLITS[task.split].label}</span><span class="sep"></span>
-          <span>المتبقي ≈ <b class="num">${fmt(avg)}</b> ${esc(task.unit)} ${SPLITS[task.split].each}</span>
-          <span class="sep"></span>
-          <span>الرقم داخل الخانة = المطلوب بعد إعادة التوزيع</span>
+      <div class="tc-bar">
+        <div class="bar ${c.remaining === 0 ? "done" : ""}">
+          <i style="width:${(c.pct * 100).toFixed(1)}%"></i>
+          ${c.pacePct > 0 && c.pacePct < 1 ? `<span class="pace" style="inset-inline-start:${(c.pacePct * 100).toFixed(1)}%" title="المفترض إنجازه قبل اليوم"></span>` : ""}
         </div>
-        ${body}
-      </div>` : ""}
+      </div>
+      <div class="tc-note">
+        ${c.daysLeft > 0 ? `${c.daysLeft} يوم متبقي` : "انتهت الفترة"} ·
+        المتبقي ≈ <b class="num" style="color:var(--text-2)">${fmt(avg)}</b>
+        ${esc(task.unit)} ${SPLITS[task.split].each}
+      </div>
 
-      <div class="task-foot">
+      ${summary ? `<div class="tc-meter">${summary}</div>` : ""}
+
+      <div class="tc-foot">
         <div class="step">
           <button data-act="dec" data-task="${task.id}" aria-label="إنقاص">−</button>
           <span class="val">${fmt(c.cur ? c.cur.done : 0)}</span>
           <button data-act="inc" data-task="${task.id}" aria-label="زيادة">+</button>
         </div>
-        <span style="font-size:12px;color:var(--text-3)">تسجيل على ${c.cur ? slotLong(c.cur) : "—"}</span>
         <span class="spacer"></span>
         <button class="link-btn" data-act="edit" data-task="${task.id}">تعديل</button>
         <button class="link-btn danger" data-act="del" data-task="${task.id}">حذف</button>
       </div>
+
+      ${gran ? `<button class="disclose" data-act="expand" data-task="${task.id}" aria-expanded="${open}">
+        ${open ? "إخفاء التفصيل" : "التفصيل اليومي"}
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>` : ""}
+      ${detail ? `<div class="tc-detail">${detail}</div>` : ""}
     </article>`;
   }).join("");
+
+  return `<div class="grid wide">${cards}</div>`;
 }
 
 function renderCal() {
@@ -1781,6 +2122,92 @@ function renderCal() {
     </div>${panel}`;
 }
 
+function renderInsights() {
+  const q = insights();
+  const cards = [];
+
+  if (q.week) {
+    const vals = q.week.byDay.map(b => (b.n ? b.sum / b.n : 0));
+    const bars = Array.from({ length: 7 }, (_, i) => {
+      const d = (S.settings.weekStart + i) % 7;
+      const cls = d === q.week.best ? "best" : d === q.week.worst ? "worst" : "";
+      return { d, cls, v: vals[d] };
+    });
+    cards.push(`
+    <div class="ins-card">
+      <div class="ins-k">أداؤك بحسب اليوم</div>
+      <div class="wk">
+        ${bars.map(b => `<div class="c ${b.cls}" title="${DAY_FULL[b.d]} — ${Math.round(b.v * 100)}%">
+            <i style="height:${Math.max(4, b.v * 100)}%"></i></div>`).join("")}
+        ${bars.map(b => `<span class="l ${b.cls}">${DAY_SHORT[b.d].slice(0, 3)}</span>`).join("")}
+      </div>
+      <div class="ins-v">
+        أقوى أيامك <b>${DAY_FULL[q.week.best]}</b> (<span class="num">${Math.round(q.week.bestAvg * 100)}%</span>)،
+        وأضعفها <b>${DAY_FULL[q.week.worst]}</b> (<span class="num">${Math.round(q.week.worstAvg * 100)}%</span>).
+        ${q.week.bestAvg - q.week.worstAvg > 0.25
+          ? `الفرق كبير — خفّف حمل ${DAY_FULL[q.week.worst]} أو اجعله يوم راحة.` : ""}
+      </div>
+    </div>`);
+  }
+
+  if (q.blocks) {
+    cards.push(`
+    <div class="ins-card">
+      <div class="ins-k">أكثر ما يعطّلك</div>
+      <div class="blk">
+        ${q.blocks.list.map(([name, n]) => `
+          <div>
+            <div class="blk-row"><span>${esc(name)}</span><span class="blk-n">${n}</span></div>
+            <div class="blk-bar"><i style="width:${(n / q.blocks.max * 100).toFixed(0)}%"></i></div>
+          </div>`).join("")}
+      </div>
+      <div class="ins-v">مذكور في <b>${q.blocks.list[0][1]}</b> يوم من أصل ${q.refN} سجّلتها.</div>
+    </div>`);
+  }
+
+  if (q.energy) {
+    const diff = Math.round((q.energy.hi - q.energy.lo) * 100);
+    cards.push(`
+    <div class="ins-card">
+      <div class="ins-k">الطاقة مقابل الإنجاز</div>
+      <div class="ins-v">
+        في أيام الطاقة العالية تنجز <span class="num">${Math.round(q.energy.hi * 100)}%</span> من خطتك،
+        وفي أيام الطاقة المنخفضة <span class="num">${Math.round(q.energy.lo * 100)}%</span>.
+        ${diff >= 20
+          ? `الفارق <b>${diff} نقطة</b> — طاقتك هي العامل الأكبر، لا حجم الخطة.`
+          : `الفارق بسيط — إنجازك لا يتأثر كثيرًا بطاقتك.`}
+      </div>
+    </div>`);
+  }
+
+  if (q.estimate) {
+    const p = Math.round(q.estimate.avg * 100);
+    cards.push(`
+    <div class="ins-card">
+      <div class="ins-k">دقة تقديرك</div>
+      <div class="ins-v">
+        في آخر <b>${q.estimate.n}</b> فترة منتهية أنجزت <span class="num">${p}%</span> من الهدف وسطيًا.
+        ${p < 80 ? `تضع أهدافًا أكبر من طاقتك — جرّب خفضها بمقدار <b>${100 - p}%</b> وستُغلقها كاملة.`
+         : p > 100 ? `تنجز أكثر مما تخطط — ارفع أهدافك قليلًا.`
+         : `تقديرك واقعي — استمر عليه.`}
+      </div>
+    </div>`);
+  }
+
+  if (!cards.length) {
+    return `<div class="card" style="padding:20px">
+      <div class="section-head" style="margin-bottom:12px"><h2>الأنماط</h2><span class="line"></span></div>
+      <p style="font-size:13px;color:var(--text-3);line-height:1.75">
+        سجّل «تأمل اليوم» في شاشة يومك لبضعة أيام، وستظهر هنا أنماطك:
+        أقوى أيام أسبوعك، وأكثر ما يعطّلك، وأثر طاقتك على إنجازك، ومدى واقعية أهدافك.
+      </p></div>`;
+  }
+
+  return `<div class="section-head"><h2>الأنماط</h2>
+    <span class="hint">مستخرجة من تأملاتك وسجل إنجازك</span><span class="line"></span></div>
+    <div class="ins">${cards.join("")}</div>`;
+}
+
 function renderStats() {
   const t = today();
   const days = Array.from({ length: 30 }, (_, i) => addDays(t, -(29 - i)));
@@ -1826,6 +2253,8 @@ function renderStats() {
     <div class="chart">${bars}</div>
     <div class="chart-x"><span>${days[0].getDate()} ${MONTHS[days[0].getMonth()]}</span><span>اليوم</span></div>
   </div>
+
+  ${renderInsights()}
 
   <div class="card" style="padding:20px">
     <div class="section-head" style="margin-bottom:12px"><h2>حالة المهام في فترتها الحالية</h2><span class="line"></span></div>
@@ -2173,6 +2602,50 @@ document.addEventListener("click", e => {
       });
       break;
     }
+    case "expand": {
+      expanded.has(id) ? expanded.delete(id) : expanded.add(id);
+      render();
+      break;
+    }
+    case "energy": {
+      reflDraft = reflCurrent();
+      reflDraft.energy = reflDraft.energy === +el.dataset.v ? 0 : +el.dataset.v;
+      render();
+      break;
+    }
+    case "block": {
+      reflDraft = reflCurrent();
+      const v = el.dataset.v;
+      reflDraft.blocks = reflDraft.blocks.includes(v)
+        ? reflDraft.blocks.filter(x => x !== v)
+        : [...reflDraft.blocks, v];
+      render();
+      break;
+    }
+    case "reflSave": {
+      const d = reflCurrent();
+      if (!d.energy && !d.blocks.length && !d.win.trim() && !d.fix.trim()) {
+        toast("سجّل طاقتك على الأقل"); break;
+      }
+      const f = dayFacts();
+      S.reflect[key(today())] = {
+        energy: d.energy, blocks: d.blocks,
+        win: d.win.trim(), fix: d.fix.trim(),
+        score: f.pct, done: f.done, planned: f.planned,
+        at: Date.now()
+      };
+      reflDraft = null;
+      save(); render();
+      toast("حُفظ تأمل اليوم");
+      break;
+    }
+    case "reflDel": {
+      delete S.reflect[key(today())];
+      reflDraft = null;
+      save(); render();
+      toast("حُذف تأمل اليوم");
+      break;
+    }
     case "edit":      openForm(id); break;
     case "del": {
       const task = S.tasks.find(t => t.id === id);
@@ -2214,6 +2687,10 @@ document.addEventListener("click", e => {
 });
 
 document.addEventListener("input", e => {
+  /* نصوص التأمل: تُحفظ في المسودة بلا إعادة رسم حتى لا تنقطع الكتابة */
+  const r = e.target.dataset && e.target.dataset.r;
+  if (r) { reflDraft = reflCurrent(); reflDraft[r] = e.target.value; return; }
+
   const f = e.target.dataset && e.target.dataset.f;
   if (!f || !draft) return;
   if (f === "catchup") { draft.catchup = e.target.checked; paintForm(); return; }
