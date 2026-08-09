@@ -8,8 +8,8 @@
 <meta name="description" content="تطبيق مهام يقسّم أهدافك اليومية والأسبوعية والشهرية والسنوية على وحدات أصغر تلقائيًا">
 
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#F1F4F3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#091412" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F1F5F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A1622" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -27,96 +27,96 @@
    TOKENS
    ============================================================ */
 :root{
-  /* light (default) */
-  --bg:#F1F4F3;
-  --bg-grad:radial-gradient(1200px 600px at 100% -10%, #E3EFEC 0%, transparent 60%);
+  /* light */
+  --bg:#F1F5F7;
+  --bg-grad:radial-gradient(1100px 560px at 100% -12%, #DCEEEB 0%, transparent 62%);
   --surface:#FFFFFF;
-  --surface-2:#F6F9F8;
-  --surface-3:#EAF0EE;
-  --line:#DAE3E0;
-  --line-2:#C4D2CE;
-  --text:#0D1F1D;
-  --text-2:#3F5754;
-  --text-3:#7B908C;
-  --accent:#0E6E68;
-  --accent-2:#0A5450;
-  --accent-soft:#DBEDEA;
+  --surface-2:#EFF4F7;
+  --surface-3:#E3EBF0;
+  --line:#DBE4EA;
+  --line-2:#C2D2DC;
+  --text:#0C1A24;
+  --text-2:#445A69;
+  --text-3:#7B92A2;
+  --accent:#0E9384;
+  --accent-2:#0B7A6E;
+  --accent-soft:#D5F2ED;
   --on-accent:#FFFFFF;
-  --brass:#96690F;
-  --brass-soft:#F6E9CC;
-  --ok:#2C7A52;
-  --ok-soft:#DCEFE3;
-  --bad:#AE3F37;
-  --bad-soft:#F8E3E1;
-  --shadow-1:0 1px 2px rgba(11,32,30,.05), 0 1px 1px rgba(11,32,30,.04);
-  --shadow-2:0 18px 40px -20px rgba(11,32,30,.28), 0 2px 8px rgba(11,32,30,.06);
-  --shadow-pop:0 24px 60px -18px rgba(11,32,30,.35);
+  --brass:#B45309;
+  --brass-soft:#FCEBD5;
+  --ok:#0F8A5F;
+  --ok-soft:#D6F2E5;
+  --bad:#C3413B;
+  --bad-soft:#FAE3E2;
+  --shadow-1:0 1px 2px rgba(12,26,36,.05), 0 1px 1px rgba(12,26,36,.04);
+  --shadow-2:0 18px 40px -20px rgba(12,26,36,.26), 0 2px 8px rgba(12,26,36,.06);
+  --shadow-pop:0 24px 60px -18px rgba(12,26,36,.35);
 
-  --c-teal:#0E6E68; --c-ocean:#2A5C8A; --c-plum:#7A4270;
-  --c-brass:#96690F; --c-olive:#54741F; --c-clay:#A8503C;
+  --c-teal:#0E9384; --c-ocean:#2563EB; --c-plum:#9333EA;
+  --c-brass:#B45309; --c-olive:#4D7C0F; --c-clay:#E11D48;
 
   --font-display:"SF Arabic Rounded","Noto Kufi Arabic","Dubai","Cairo","SF Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
   --font-body:"SF Arabic","Noto Sans Arabic","IBM Plex Sans Arabic","Dubai","Segoe UI",Tahoma,system-ui,sans-serif;
   --font-num:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Mono",Consolas,monospace;
 
-  --r-sm:9px; --r-md:14px; --r-lg:20px; --r-xl:26px;
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:24px;
   --rail:268px;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#091412;
-    --bg-grad:radial-gradient(1200px 600px at 100% -10%, #0F2A27 0%, transparent 60%);
-    --surface:#0F1E1C;
-    --surface-2:#132523;
-    --surface-3:#1A2F2C;
-    --line:#223A36;
-    --line-2:#2F4B46;
-    --text:#E4EFEC;
-    --text-2:#9CB3AF;
-    --text-3:#6C8783;
-    --accent:#3BB5AA;
-    --accent-2:#5AD3C6;
-    --accent-soft:#0F2E2B;
-    --on-accent:#03201E;
-    --brass:#D3A44B;
-    --brass-soft:#2B2415;
-    --ok:#4FB37B;
-    --ok-soft:#12301F;
-    --bad:#E07268;
-    --bad-soft:#331917;
-    --shadow-1:0 1px 2px rgba(0,0,0,.35);
-    --shadow-2:0 18px 40px -20px rgba(0,0,0,.75), 0 2px 8px rgba(0,0,0,.3);
-    --shadow-pop:0 24px 60px -18px rgba(0,0,0,.8);
-    --c-teal:#3BB5AA; --c-ocean:#6FA8DC; --c-plum:#C689B8;
-    --c-brass:#D3A44B; --c-olive:#9FC55A; --c-clay:#E08C77;
+    --bg:#0A1622;
+    --bg-grad:radial-gradient(1100px 560px at 100% -12%, #102B33 0%, transparent 62%);
+    --surface:#132433;
+    --surface-2:#182E3F;
+    --surface-3:#1F3A4D;
+    --line:#263F53;
+    --line-2:#35576F;
+    --text:#E9F2F7;
+    --text-2:#9FB6C7;
+    --text-3:#6D8799;
+    --accent:#2DD4BF;
+    --accent-2:#5EEAD4;
+    --accent-soft:#0E3330;
+    --on-accent:#04211E;
+    --brass:#FBBF24;
+    --brass-soft:#33290F;
+    --ok:#34D399;
+    --ok-soft:#0D3025;
+    --bad:#F87171;
+    --bad-soft:#37191B;
+    --shadow-1:0 1px 2px rgba(0,0,0,.4);
+    --shadow-2:0 18px 40px -20px rgba(0,0,0,.8), 0 2px 8px rgba(0,0,0,.35);
+    --shadow-pop:0 24px 60px -18px rgba(0,0,0,.85);
+    --c-teal:#2DD4BF; --c-ocean:#60A5FA; --c-plum:#C084FC;
+    --c-brass:#FBBF24; --c-olive:#A3E635; --c-clay:#FB7185;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#091412;
-  --bg-grad:radial-gradient(1200px 600px at 100% -10%, #0F2A27 0%, transparent 60%);
-  --surface:#0F1E1C;
-  --surface-2:#132523;
-  --surface-3:#1A2F2C;
-  --line:#223A36;
-  --line-2:#2F4B46;
-  --text:#E4EFEC;
-  --text-2:#9CB3AF;
-  --text-3:#6C8783;
-  --accent:#3BB5AA;
-  --accent-2:#5AD3C6;
-  --accent-soft:#0F2E2B;
-  --on-accent:#03201E;
-  --brass:#D3A44B;
-  --brass-soft:#2B2415;
-  --ok:#4FB37B;
-  --ok-soft:#12301F;
-  --bad:#E07268;
-  --bad-soft:#331917;
-  --shadow-1:0 1px 2px rgba(0,0,0,.35);
-  --shadow-2:0 18px 40px -20px rgba(0,0,0,.75), 0 2px 8px rgba(0,0,0,.3);
-  --shadow-pop:0 24px 60px -18px rgba(0,0,0,.8);
-  --c-teal:#3BB5AA; --c-ocean:#6FA8DC; --c-plum:#C689B8;
-  --c-brass:#D3A44B; --c-olive:#9FC55A; --c-clay:#E08C77;
+  --bg:#0A1622;
+  --bg-grad:radial-gradient(1100px 560px at 100% -12%, #102B33 0%, transparent 62%);
+  --surface:#132433;
+  --surface-2:#182E3F;
+  --surface-3:#1F3A4D;
+  --line:#263F53;
+  --line-2:#35576F;
+  --text:#E9F2F7;
+  --text-2:#9FB6C7;
+  --text-3:#6D8799;
+  --accent:#2DD4BF;
+  --accent-2:#5EEAD4;
+  --accent-soft:#0E3330;
+  --on-accent:#04211E;
+  --brass:#FBBF24;
+  --brass-soft:#33290F;
+  --ok:#34D399;
+  --ok-soft:#0D3025;
+  --bad:#F87171;
+  --bad-soft:#37191B;
+  --shadow-1:0 1px 2px rgba(0,0,0,.4);
+  --shadow-2:0 18px 40px -20px rgba(0,0,0,.8), 0 2px 8px rgba(0,0,0,.35);
+  --shadow-pop:0 24px 60px -18px rgba(0,0,0,.85);
+  --c-teal:#2DD4BF; --c-ocean:#60A5FA; --c-plum:#C084FC;
+  --c-brass:#FBBF24; --c-olive:#A3E635; --c-clay:#FB7185;
 }
 
 /* ============================================================
@@ -248,6 +248,25 @@ button{cursor:pointer;background:none;border:0;padding:0}
 .section-head h2{font-size:16px}
 .section-head .hint{font-size:12.5px;color:var(--text-3)}
 .section-head .line{flex:1;height:1px;background:var(--line)}
+
+/* رأس قسم قابل للطي بعدّاد — كما في المرجع */
+.sec{
+  display:flex;align-items:center;gap:11px;width:100%;text-align:start;
+  padding:14px 18px;border-radius:var(--r-lg);
+  background:var(--surface);border:1px solid var(--line);
+  box-shadow:var(--shadow-1);transition:border-color .18s,background .18s;
+}
+.sec:hover{border-color:var(--line-2)}
+.sec .ic{display:flex;color:var(--accent)}
+.sec h2{flex:1;font-size:15.5px}
+.sec .cnt{
+  font-family:var(--font-num);font-size:13px;font-weight:700;color:var(--text-2);
+  background:var(--surface-3);padding:3px 11px;border-radius:99px;
+}
+.sec .cnt.full{background:var(--accent-soft);color:var(--accent)}
+.sec .chev{color:var(--text-3);display:flex;transition:transform .25s}
+.sec[aria-expanded="false"] .chev{transform:rotate(-90deg)}
+.secwrap{display:flex;flex-direction:column;gap:14px}
 
 /* ============================================================
    CARD
@@ -441,6 +460,11 @@ button.cell:hover{border-color:var(--tc);transform:translateY(-2px)}
   border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-1);
   transition:border-color .2s, box-shadow .25s;
 }
+/* الحدّ العلوي الملوّن: هوية المهمة بلمحة */
+.tcard::before{
+  content:"";position:absolute;top:0;inset-inline:0;height:3px;background:var(--tc);
+}
+.tcard.done::before{background:var(--ok)}
 .tcard:hover{box-shadow:var(--shadow-2);border-color:var(--line-2)}
 .tcard.idle{opacity:.55}
 
@@ -755,7 +779,7 @@ button.refl-head:hover{background:var(--surface-2)}
 :root:not([data-theme="light"]) .toast button{color:var(--accent)}
 
 /* mobile tabbar */
-.tabbar{display:none}
+.tabbar,.fab{display:none}
 
 @media (max-width:960px){
   .app{grid-template-columns:1fr}
@@ -769,15 +793,29 @@ button.refl-head:hover{background:var(--surface-2)}
     display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
     position:fixed;bottom:0;inset-inline:0;z-index:40;
     background:var(--surface);
-    background:color-mix(in srgb,var(--surface) 92%,transparent);
-    backdrop-filter:blur(14px);
-    border-top:1px solid var(--line);padding:7px 8px calc(7px + env(safe-area-inset-bottom));
+    background:color-mix(in srgb,var(--surface) 94%,transparent);
+    backdrop-filter:blur(16px);
+    border-top:1px solid var(--line);padding:9px 8px calc(9px + env(safe-area-inset-bottom));
   }
   .tab{
-    display:flex;flex-direction:column;align-items:center;gap:3px;
-    padding:7px 0;border-radius:12px;color:var(--text-3);font-size:10.5px;font-weight:700;
+    display:flex;flex-direction:column;align-items:center;gap:5px;
+    padding:5px 0;color:var(--text-3);font-size:10.5px;font-weight:700;
+    transition:color .18s;
   }
-  .tab[aria-current="true"]{color:var(--accent);background:var(--accent-soft)}
+  .tab[aria-current="true"]{color:var(--accent)}
+  /* زر الإضافة العائم */
+  .fab{
+    position:fixed;z-index:41;inset-inline-end:18px;
+    bottom:calc(78px + env(safe-area-inset-bottom));
+    width:56px;height:56px;border-radius:50%;
+    display:grid;place-items:center;
+    background:var(--accent);color:var(--on-accent);
+    box-shadow:0 12px 28px -8px var(--accent), var(--shadow-2);
+    transition:transform .16s;
+  }
+  .fab:active{transform:scale(.94)}
+  /* الزر العائم يغني عن زر الإضافة في الرأس */
+  #btnAdd{display:none}
   .section-head{flex-wrap:wrap}
   .section-head .hint{order:3;flex-basis:100%}
   .section-head .line{display:none}
@@ -870,6 +908,9 @@ button.refl-head:hover{background:var(--surface-2)}
   </main>
 </div>
 
+<button class="fab" id="fab" aria-label="مهمة جديدة">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
 <nav class="tabbar" id="tabbar"></nav>
 <div id="modalRoot"></div>
 <div class="toast-wrap" id="toastWrap"></div>
@@ -931,7 +972,8 @@ const UNIT_SUGGEST = ["محاضرة","صفحة","تمرين","دقيقة","سا�
 /* ============================================================
    3. STATE
    ============================================================ */
-const DEFAULTS = { weekStart: 0, theme: "auto" };
+/* التصميم مؤلَّف داكنًا في الأصل، فهو الافتراضي — والتبديل متاح دائمًا */
+const DEFAULTS = { weekStart: 0, theme: "dark" };
 let S = {
   settings: Object.assign({}, DEFAULTS, Store.get("mq.settings", {})),
   tasks:    Store.get("mq.tasks", null),
@@ -940,6 +982,7 @@ let S = {
 };
 let view = "today";
 let expanded = new Set();
+let collapsed = new Set();
 let calRef = new Date();
 let calSel = null;
 let lastAction = null;
@@ -1889,8 +1932,20 @@ function renderToday() {
     </article>`;
   }).join("");
 
+  const open = !collapsed.has("today");
   return magicBar() + summary + `
-    <div class="grid">${cards}</div>
+    <div class="secwrap">
+      <button class="sec" data-act="sec" data-k="today" aria-expanded="${open}">
+        <span class="ic">${icon("today", 18)}</span>
+        <h2>مهام اليوم</h2>
+        <span class="cnt ${doneCount === board.length ? "full" : ""}">${doneCount}/${board.length}</span>
+        <span class="chev">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
+      </button>
+      ${open ? `<div class="grid">${cards}</div>` : ""}
+    </div>
     ${renderReflect()}`;
 }
 
@@ -2481,6 +2536,12 @@ document.addEventListener("click", e => {
   switch (act) {
     case "nav":       view = el.dataset.v; render(); window.scrollTo({ top: 0, behavior: "smooth" }); break;
     case "reflToggle": reflOpen = !reflOpen; render(); break;
+    case "sec": {
+      const k = el.dataset.k;
+      collapsed.has(k) ? collapsed.delete(k) : collapsed.add(k);
+      render();
+      break;
+    }
     case "magic": runMagic(); break;
     case "inc":       stepTask(id, +1); break;
     case "dec":       stepTask(id, -1); break;
@@ -2620,6 +2681,7 @@ document.addEventListener("keydown", e => {
 });
 
 document.getElementById("btnAdd").onclick = () => openForm();
+document.getElementById("fab").onclick = () => openForm();
 document.getElementById("btnTheme").onclick = () => {
   const order = ["auto", "light", "dark"];
   S.settings.theme = order[(order.indexOf(S.settings.theme) + 1) % 3];
