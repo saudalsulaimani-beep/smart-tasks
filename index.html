@@ -853,11 +853,49 @@ button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
 }
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .modal{
-  width:min(620px,100%);max-height:min(88dvh,900px);overflow-y:auto;
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);
-  box-shadow:var(--elev-3);animation:pop .28s cubic-bezier(.2,.8,.2,1);
+  width:min(560px,100%);max-height:min(88dvh,900px);overflow-y:auto;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--line);border-radius:var(--r-2xl);
+  box-shadow:var(--elev-3);animation:pop .3s cubic-bezier(.2,.9,.25,1);
 }
-@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.grabber{display:none}
+
+/* على الجوال: لوح ينزلق من الأسفل، لا نافذة في المنتصف */
+@media (max-width:640px){
+  .scrim{align-items:flex-end;padding:0}
+  .modal.sheet{
+    width:100%;max-width:none;max-height:92dvh;
+    border-radius:var(--r-2xl) var(--r-2xl) 0 0;
+    border-bottom:0;
+    animation:sheetUp .34s cubic-bezier(.2,.9,.25,1);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .modal.sheet .grabber{
+    display:block;width:40px;height:4px;border-radius:99px;
+    background:var(--line-2);margin:9px auto 0;
+  }
+  .modal.sheet .modal-head{padding-top:12px}
+}
+
+/* زر الخيارات المتقدمة */
+.more{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  padding:12px;border-radius:var(--r-md);border:1px dashed var(--line-2);
+  font-size:13px;font-weight:700;color:var(--text-3);
+  transition:color .18s,border-color .18s,background .18s;
+}
+.more:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.more svg{transition:transform .25s}
+.more[aria-expanded="true"] svg{transform:rotate(180deg)}
+.advbox{
+  display:flex;flex-direction:column;gap:18px;
+  padding:17px;border-radius:var(--r-lg);
+  background:var(--surface-2);border:1px solid var(--line);
+  animation:rise .3s cubic-bezier(.16,.9,.24,1);
+}
+.icon-btn.danger:hover{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
 .modal-head{
   display:flex;align-items:center;gap:12px;padding:18px 22px;
   border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2;
@@ -957,7 +995,8 @@ button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
   .section-head .hint{order:3;flex-basis:100%}
   .section-head .line{display:none}
   .grp-row{grid-template-columns:1fr;gap:9px}
-  .row2,.row3{grid-template-columns:1fr}
+  .row2:not(.tight),.row3{grid-template-columns:1fr}
+  .row2.tight{grid-template-columns:1fr 1.3fr;gap:11px}
   .magic-row{flex-direction:column}
 }
 @media (max-width:560px){
@@ -1785,12 +1824,28 @@ function meter(c, slots, opts) {
 /* ============================================================
    8. VIEWS
    ============================================================ */
+/* الجملة الواضحة تُنشئ المهمة فورًا بلا نافذة؛ والغامضة فقط تفتح اللوح.
+   هذا أقصر مسار ممكن: اكتب واضغط Enter. */
 function runMagic() {
   const box = document.getElementById("magicIn");
   const text = box ? box.value.trim() : "";
   if (!text) { if (box) box.focus(); return; }
+  const r = fehm(text);
   box.value = "";
-  openForm(null, fehm(text));
+
+  const sure = !r.guessedTarget && !r.guessedPeriod && r.title !== "مهمة جديدة";
+  if (!sure) { openForm(null, r); return; }
+
+  const dw = [0,1,2,3,4,5,6].map(i => (r.rest.includes(i) ? 0 : 1));
+  const t = { id: uid(), title: r.title, unit: r.unit, target: r.target,
+              period: r.period, split: r.split, dayw: dw, rest: r.rest,
+              curve: "even", catchup: true,
+              color: COLORS[S.tasks.length % COLORS.length].id,
+              created: key(today()), archived: false };
+  S.tasks.push(t);
+  save(); render();
+  toast(`أُضيفت «${t.title}» — ${fmt(t.target)} ${t.unit} ${PERIODS[t.period].label}`,
+        "تعديل", () => openForm(t.id));
 }
 
 function magicBar(hint) {
@@ -1832,6 +1887,7 @@ const ENERGY = ["منخفضة جدًا", "منخفضة", "متوسطة", "عال
 
 let reflDraft = null;      // مسودة اليوم قبل الحفظ
 let reflOpen = false;      // مطوي افتراضيًا
+let advOpen = false;       // الخيارات المتقدمة مطوية عند فتح النموذج
 
 /* الحالة الحالية: المسودة، وإلا المحفوظ، وإلا فارغ */
 function reflCurrent() {
@@ -2514,6 +2570,7 @@ function openForm(taskId, parsed) {
     draft._read = parsed;
   }
   draft._editing = !!ex;
+  advOpen = false;
   paintForm();
 }
 function closeForm() { draft = null; document.getElementById("modalRoot").innerHTML = ""; }
@@ -2594,19 +2651,22 @@ function paintForm() {
 
   document.getElementById("modalRoot").innerHTML = `
   <div class="scrim" data-act="scrim">
-    <div class="modal" role="dialog" aria-modal="true" aria-label="${d._editing ? "تعديل مهمة" : "مهمة جديدة"}">
+    <div class="modal sheet" role="dialog" aria-modal="true" aria-label="${d._editing ? "تعديل مهمة" : "مهمة جديدة"}">
+      <div class="grabber"></div>
       <div class="modal-head">
         <h3>${d._editing ? "تعديل المهمة" : "مهمة جديدة"}</h3>
         <button class="icon-btn" data-act="closeform" aria-label="إغلاق">${icon("close", 16)}</button>
       </div>
       <div class="modal-body">
         ${readCard(d._read)}
+
         <div class="field">
           <label for="f-title">اسم المهمة</label>
-          <input class="inp" id="f-title" data-f="title" value="${esc(d.title)}" placeholder="مثال: إنهاء محاضرات مادة الإحصاء" autocomplete="off">
+          <input class="inp" id="f-title" data-f="title" value="${esc(d.title)}"
+                 placeholder="مثلًا: محاضرات الإحصاء" autocomplete="off" enterkeyhint="done">
         </div>
 
-        <div class="row3">
+        <div class="row2 tight">
           <div class="field">
             <label for="f-target">المقدار</label>
             <input class="inp" id="f-target" data-f="target" type="number" min="0" step="0.5" value="${d.target}">
@@ -2616,53 +2676,62 @@ function paintForm() {
             <input class="inp" id="f-unit" data-f="unit" value="${esc(d.unit)}" list="units" autocomplete="off">
             <datalist id="units">${units}</datalist>
           </div>
-          <div class="field">
-            <label>اللون</label>
-            <div class="swatches">${swatches}</div>
-          </div>
         </div>
 
         <div class="field">
-          <label>التكرار</label>
+          <label>كل متى؟</label>
           <div class="chips">${periodChips}</div>
         </div>
 
         <div class="field">
-          <label>التقسيم الذكي</label>
+          <label>يتقسّم على</label>
           <div class="chips">${splitChips}</div>
-          <span class="note">اختر الوحدة الأصغر التي تريد أن يوزع عليها المقدار. التقسيم على الأيام داخل فترة شهرية يعرض مجمعا بالأسابيع تلقائيًا.</span>
         </div>
-
-        ${d.split === "day" ? `
-        <div class="field">
-          <label>شدّة الأيام <span class="note">(اضغط اليوم لتغيّره: راحة ← عادي ← مكثّف)</span></label>
-          <div class="chips">${dayChips}</div>
-          <span class="note">اليوم المكثّف يأخذ ضعف نصيب اليوم العادي، ويوم الراحة لا يأخذ شيئًا.</span>
-        </div>` : ""}
-
-        <div class="field">
-          <label>منحنى التوزيع</label>
-          <div class="chips">${curveChips}</div>
-          <span class="note">${CURVES[d.curve || "even"].hint}.</span>
-        </div>
-
-        <label class="switch">
-          <input type="checkbox" data-f="catchup" ${d.catchup !== false ? "checked" : ""}>
-          <span class="track"></span>
-          <span class="sw-txt">
-            <b>ترحيل المتأخر تلقائيًا</b>
-            <span>إن فاتك يوم، يُعاد توزيع الباقي على الأيام المتبقية بدل ضياعه.</span>
-          </span>
-        </label>
 
         <div class="preview" style="--tc:${colorVar(d.color)}">
           ${previewInner(d)}
         </div>
+
+        <button class="more" data-act="adv" aria-expanded="${advOpen}">
+          <span>خيارات متقدمة</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+
+        ${!advOpen ? "" : `
+        <div class="advbox">
+          ${d.split === "day" ? `
+          <div class="field">
+            <label>شدّة الأيام <span class="note">(اضغط اليوم: راحة ← عادي ← مكثّف)</span></label>
+            <div class="chips">${dayChips}</div>
+          </div>` : ""}
+
+          <div class="field">
+            <label>منحنى التوزيع</label>
+            <div class="chips">${curveChips}</div>
+            <span class="note">${CURVES[d.curve || "even"].hint}.</span>
+          </div>
+
+          <div class="field">
+            <label>اللون</label>
+            <div class="swatches">${swatches}</div>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" data-f="catchup" ${d.catchup !== false ? "checked" : ""}>
+            <span class="track"></span>
+            <span class="sw-txt">
+              <b>ترحيل المتأخر تلقائيًا</b>
+              <span>إن فاتك يوم، يعاد توزيع الباقي على الأيام المتبقية بدل ضياعه.</span>
+            </span>
+          </label>
+        </div>`}
       </div>
       <div class="modal-foot">
-        <button class="btn btn-primary" data-act="saveform">${d._editing ? "حفظ التعديل" : "إضافة المهمة"}</button>
-        <button class="btn btn-quiet" data-act="closeform">إلغاء</button>
-        ${d._editing ? `<span class="spacer"></span><button class="link-btn danger" data-act="del" data-task="${d.id}">حذف المهمة</button>` : ""}
+        <button class="btn btn-primary" data-act="saveform" style="flex:1">
+          ${d._editing ? "حفظ التعديل" : "أضف المهمة"}</button>
+        ${d._editing ? `<button class="icon-btn danger" data-act="del" data-task="${d.id}"
+          aria-label="حذف">${icon("trash", 16)}</button>` : ""}
       </div>
     </div>
   </div>`;
@@ -2713,7 +2782,7 @@ function renderNav() {
   if (g) g.setAttribute("aria-current", view === "set");
 }
 
-const VERSION_TXT = "v9";
+const VERSION_TXT = "v10";
 const WEEK_STARTS = [[0, "الأحد"], [1, "الاثنين"], [6, "السبت"]];
 const THEMES = [["dark", "داكن"], ["light", "فاتح"], ["auto", "حسب النظام"]];
 
@@ -2857,6 +2926,7 @@ document.addEventListener("click", e => {
   switch (act) {
     case "nav":       view = el.dataset.v; render(); window.scrollTo({ top: 0, behavior: "smooth" }); break;
     case "add":        openForm(); break;
+    case "adv":        advOpen = !advOpen; paintForm(); break;
     case "reflToggle": reflOpen = !reflOpen; render(); break;
     case "bwk": {
       const n = Number(el.dataset.v);
