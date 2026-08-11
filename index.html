@@ -937,6 +937,15 @@ button.bcell:hover{border-color:var(--tc);transform:translateY(-1px)}
 .chip.sq.lv1{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .chip.sq.lv2{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .chip:disabled{opacity:.35;cursor:not-allowed}
+/* اختيار التكرار: زرّان عريضان لا وسمان صغيران */
+.chips.big2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.chips.big2 .chip{padding:13px 8px;text-align:center;justify-content:center;font-size:13.5px}
+.chips.big2.ask .chip{border-color:var(--brass);border-style:dashed}
+.chips.big2 .chip[aria-pressed="true"]{
+  background:linear-gradient(145deg,var(--accent),var(--accent-2));
+  border-color:transparent;color:var(--on-accent);border-style:solid;
+  box-shadow:0 8px 20px -10px var(--accent-glow);
+}
 
 .swatches{display:flex;gap:8px}
 .sw{width:30px;height:30px;border-radius:10px;border:2px solid transparent;background:var(--s);transition:transform .15s}
@@ -1288,14 +1297,20 @@ const NUM_WORDS = {
   "مايه":100,"مئه":100,"ميه":100,"مايتين":200,"مئتين":200,"الف":1000
 };
 
-/* ترتيب الفحص مهم: «ربع سنه» تحتوي «سنه»، و«ثلاثه اشهر» تحتوي «شهر» */
+/* ترتيب الفحص مهم: «ربع سنه» تحتوي «سنه»، و«ثلاثه اشهر» تحتوي «شهر».
+   ونفرّق بين صيغتين: «كل أسبوع» تكرار دائم، و«هذا الأسبوع» مرة واحدة. */
 const PERIOD_PAT = [
-  ["half",      /(نصف? ?سنه|نص ?السنه|نصف سنوي|كل سته اشهر|كل 6 اشهر)/],
-  ["quarterly", /(ربع ?سنه|ربع سنوي|كل ثلاثه اشهر|كل 3 اشهر|هالربع|هذا الربع|كل ربع)/],
-  ["yearly",    /(كل سنه|سنويا|سنوي|بالسنه|في السنه|هالسنه|هذي السنه|هذه السنه|السنه)/],
-  ["monthly",   /(كل شهر|شهريا|شهري|بالشهر|في الشهر|هالشهر|هذا الشهر|الشهر)/],
-  ["weekly",    /(كل اسبوع|اسبوعيا|اسبوعي|بالاسبوع|في الاسبوع|هالاسبوع|هذا الاسبوع|الاسبوع)/],
-  ["daily",     /(كل يوم|يوميا|يومي|باليوم|في اليوم|هاليوم|اليوم)/]
+  ["half",      /(نصف? ?سنه|نص ?السنه|نصف سنوي|كل سته اشهر|كل 6 اشهر)/,               "every"],
+  ["quarterly", /(كل ثلاثه اشهر|كل 3 اشهر|كل ربع|ربع سنوي)/,                          "every"],
+  ["quarterly", /(هالربع|ه?ذا الربع|ه?ذي الربع|ربع ?سنه|الربع)/,                       "once"],
+  ["yearly",    /(كل سنه|سنويا|سنوي|بالسنه|في السنه)/,                                 "every"],
+  ["yearly",    /(هالسنه|ه?ذي السنه|ه?ذه السنه|ه?ذا السنه|السنه)/,                     "once"],
+  ["monthly",   /(كل شهر|شهريا|شهري|بالشهر|في الشهر)/,                                 "every"],
+  ["monthly",   /(هالشهر|ه?ذا الشهر|ه?ذي الشهر|الشهر)/,                                "once"],
+  ["weekly",    /(كل اسبوع|اسبوعيا|اسبوعي|بالاسبوع|في الاسبوع)/,                       "every"],
+  ["weekly",    /(هالاسبوع|ه?ذا الاسبوع|ه?ذي الاسبوع|الاسبوع)/,                        "once"],
+  ["daily",     /(كل يوم|يوميا|يومي|باليوم|في اليوم)/,                                 "every"],
+  ["daily",     /(هاليوم|ه?ذا اليوم|اليوم)/,                                           "once"]
 ];
 const SPLIT_PAT = [
   ["day",   /(علي ?الايام|عالايام|علي ايام|يوم بيوم)/],
@@ -1371,10 +1386,10 @@ function fehm(raw) {
   }
 
   /* 2 — الفترة */
-  let period = null;
-  for (const [p, re] of PERIOD_PAT) {
+  let period = null, repeat = null;
+  for (const [p, re, rep] of PERIOD_PAT) {
     const m = work.match(re);
-    if (m) { period = p; take(m.index, m.index + m[0].length); break; }
+    if (m) { period = p; repeat = rep; take(m.index, m.index + m[0].length); break; }
   }
 
   /* 3 — التقسيم الصريح */
@@ -1451,9 +1466,11 @@ function fehm(raw) {
 
   return {
     title, unit, target, period, split, rest,
-    guessedPeriod, converted,
+    guessedPeriod, converted, repeat,
     guessedUnit: noUnit,
-    guessedTarget: !explicitNum
+    guessedTarget: !explicitNum,
+    /* المهمة اليومية تتكرر بطبيعتها؛ غيرها نسأل عنها إن لم تُصرَّح */
+    askRepeat: !repeat && period !== "daily"
   };
 }
 
@@ -1673,10 +1690,32 @@ function dayShare(task, date) {
 
 const liveTasks = () => S.tasks.filter(t => !t.archived);
 
+/* ============================================================
+   مرة واحدة أم متكرّرة
+   المهمة المتكرّرة تظهر في كل فترة. ومهمة «مرة واحدة» مربوطة بفترة
+   بعينها (anchor)، فلا تعود في الأسبوع التالي ولا تُحسب عليك بعده.
+   ============================================================ */
+const REPEAT_LABEL = {
+  daily:     ["اليوم فقط",      "كل يوم"],
+  weekly:    ["هذا الأسبوع فقط", "كل أسبوع"],
+  monthly:   ["هذا الشهر فقط",   "كل شهر"],
+  quarterly: ["هذا الربع فقط",   "كل ربع"],
+  half:      ["هذا النصف فقط",   "كل نصف سنة"],
+  yearly:    ["هذه السنة فقط",   "كل سنة"]
+};
+const isOnce = t => t.repeat === "once";
+const anchorOf = t => t.anchor || periodKey(t.period, parseKey(t.created || key(today())));
+/* هل للمهمة نصيب في الفترة التي يقع فيها هذا التاريخ؟ */
+const taskActive = (t, ref) => !isOnce(t) || periodKey(t.period, ref || today()) === anchorOf(t);
+/* مهمة لمرة واحدة انقضت فترتها */
+const taskExpired = t => isOnce(t) && periodRange(t.period, parseKey(anchorOf(t).split(":")[1])).end < today();
+/* المهام التي لها نصيب اليوم */
+const boardTasks = () => liveTasks().filter(t => taskActive(t, today()));
+
 /* today's board */
 function todayBoard() {
   const t = today();
-  return liveTasks().map(task => {
+  return boardTasks().map(task => {
     const c = compute(task, t);
     const s = c.cur;
     if (!s) return null;
@@ -1693,6 +1732,7 @@ function dayScore(date) {
   let sum = 0, n = 0;
   liveTasks().forEach(task => {
     if (parseKey(task.created) > date) return;
+    if (!taskActive(task, date)) return;
     const sh = dayShare(task, date);
     /* only tasks tracked at day resolution can be judged per day —
        a weekly bucket isn't "unfinished" just because it's Tuesday */
@@ -1833,18 +1873,20 @@ function runMagic() {
   const r = fehm(text);
   box.value = "";
 
-  const sure = !r.guessedTarget && !r.guessedPeriod && r.title !== "مهمة جديدة";
+  const sure = !r.guessedTarget && !r.guessedPeriod && !r.askRepeat && r.title !== "مهمة جديدة";
   if (!sure) { openForm(null, r); return; }
 
   const dw = [0,1,2,3,4,5,6].map(i => (r.rest.includes(i) ? 0 : 1));
+  const rep = r.repeat === "once" ? "once" : "every";
   const t = { id: uid(), title: r.title, unit: r.unit, target: r.target,
               period: r.period, split: r.split, dayw: dw, rest: r.rest,
-              curve: "even", catchup: true,
+              curve: "even", catchup: true, repeat: rep,
+              anchor: rep === "once" ? periodKey(r.period, today()) : null,
               color: COLORS[S.tasks.length % COLORS.length].id,
               created: key(today()), archived: false };
   S.tasks.push(t);
   save(); render();
-  toast(`أُضيفت «${t.title}» — ${fmt(t.target)} ${t.unit} ${PERIODS[t.period].label}`,
+  toast(`أُضيفت «${t.title}» — ${fmt(t.target)} ${t.unit} · ${REPEAT_LABEL[t.period][rep === "once" ? 0 : 1]}`,
         "تعديل", () => openForm(t.id));
 }
 
@@ -2161,7 +2203,8 @@ function renderToday() {
 }
 
 function renderTasks() {
-  const tasks = liveTasks().sort((a, b) => PERIODS[a.period].order - PERIODS[b.period].order);
+  const tasks = liveTasks().sort((a, b) =>
+    (taskExpired(a) - taskExpired(b)) || (PERIODS[a.period].order - PERIODS[b.period].order));
   if (!tasks.length) {
     return `<div class="empty"><h3>لا توجد مهام بعد</h3>
       <p>ابدأ بمهمة مثل «إنهاء 10 محاضرات هذا الأسبوع» واختر تقسيمها على الأيام.</p></div>`;
@@ -2199,10 +2242,12 @@ function renderTasks() {
         <div class="tc-id">
           <h3 class="tc-title">${esc(task.title)}</h3>
           <div class="tc-sub">
-            ${per.label} · ${SPLITS[task.split].label}
+            ${REPEAT_LABEL[task.period][isOnce(task) ? 0 : 1]} · ${SPLITS[task.split].label}
             ${c.daysLeft > 0 ? ` · ${c.daysLeft} يوم متبقي` : " · انتهت الفترة"}
           </div>
-          ${c.status !== "ontrack"
+          ${taskExpired(task)
+            ? `<span class="tag" style="display:inline-block;margin-top:9px">انتهت — مرة واحدة</span>`
+            : c.status !== "ontrack"
             ? `<span class="tag ${stt.cls}" style="display:inline-block;margin-top:9px">${stt.txt}</span>` : ""}
         </div>
         <div class="tc-links">
@@ -2249,7 +2294,7 @@ function weekBoard(ref) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(ws, i));
   const rows = liveTasks().map(task => {
     const cells = days.map(d => {
-      const sh = dayShare(task, d);
+      const sh = taskActive(task, d) ? dayShare(task, d) : null;
       return sh ? sh : { plan: 0, done: 0, todo: 0, exact: true, off: true };
     });
     return { task, cells };
@@ -2348,7 +2393,7 @@ function renderCal() {
     const dots = [];
     let amt = 0;
     liveTasks().forEach(task => {
-      const sh = dayShare(task, d);
+      const sh = taskActive(task, d) ? dayShare(task, d) : null;
       if (!sh || sh.plan <= 0) return;
       amt += sh.todo > 0 && d >= t ? sh.todo : sh.plan;
       const cls = sh.done >= sh.plan ? "done" : (d < t ? "miss" : "");
@@ -2558,16 +2603,19 @@ function openForm(taskId, parsed) {
   const ex = taskId ? S.tasks.find(t => t.id === taskId) : null;
   draft = ex ? JSON.parse(JSON.stringify(ex)) : {
     id: uid(), title: "", unit: "مرة", target: 1,
-    period: "daily", split: "none", rest: [], catchup: true,
+    period: "daily", split: "none", rest: [], catchup: true, repeat: "every",
     color: COLORS[S.tasks.length % COLORS.length].id,
     created: key(today()), archived: false
   };
   if (parsed) {
     Object.assign(draft, {
       title: parsed.title, unit: parsed.unit, target: parsed.target,
-      period: parsed.period, split: parsed.split, rest: parsed.rest
+      period: parsed.period, split: parsed.split, rest: parsed.rest,
+      repeat: parsed.repeat || "every"
     });
+    draft.dayw = [0,1,2,3,4,5,6].map(i => (parsed.rest.includes(i) ? 0 : 1));
     draft._read = parsed;
+    draft._askRepeat = parsed.askRepeat;
   }
   draft._editing = !!ex;
   advOpen = false;
@@ -2658,7 +2706,30 @@ function paintForm() {
         <button class="icon-btn" data-act="closeform" aria-label="إغلاق">${icon("close", 16)}</button>
       </div>
       <div class="modal-body">
+        ${d._editing ? "" : `
+        <div class="field">
+          <label for="f-say">اكتبها بكلامك</label>
+          <div class="addbar">
+            ${icon("spark", 16)}
+            <input id="f-say" placeholder="أخلص عشر محاضرات هذا الأسبوع"
+                   autocomplete="off" enterkeyhint="done" aria-label="اكتب المهمة بلغة عادية">
+          </div>
+          <span class="note">يقرأ العدد والفترة وأيام الراحة أثناء كتابتك، ويملأ ما تحت.</span>
+        </div>`}
+
         ${readCard(d._read)}
+
+        <div class="field">
+          <label>${REPEAT_LABEL[d.period][0].replace(" فقط","")} أم متكرّرة؟</label>
+          <div class="chips big2 ${d._askRepeat ? "ask" : ""}">
+            <button class="chip" data-f="repeat" data-v="once"
+              aria-pressed="${d.repeat === "once"}">${REPEAT_LABEL[d.period][0]}</button>
+            <button class="chip" data-f="repeat" data-v="every"
+              aria-pressed="${d.repeat !== "once"}">${REPEAT_LABEL[d.period][1]}</button>
+          </div>
+          ${d._askRepeat ? `<span class="note" style="color:var(--brass)">
+            ما عرفت من كلامك — اختر واحدة.</span>` : ""}
+        </div>
 
         <div class="field">
           <label for="f-title">اسم المهمة</label>
@@ -2739,15 +2810,55 @@ function paintForm() {
   if (ti && !d.title) ti.focus();
 }
 
+/* يحدّث ما تحت الجملة دون إعادة بناء اللوح، حفاظًا على مؤشر الكتابة */
+function syncSheet() {
+  const d = draft, q = sel => document.querySelector(sel);
+  const set = (sel, v) => { const e = q(sel); if (e && e.value !== String(v)) e.value = v; };
+  set("#f-title", d.title); set("#f-target", d.target); set("#f-unit", d.unit);
+  document.querySelectorAll('[data-f="period"]').forEach(b =>
+    b.setAttribute("aria-pressed", b.dataset.v === d.period));
+  const allowed = PERIODS[d.period].splits;
+  document.querySelectorAll('[data-f="split"]').forEach(b => {
+    b.setAttribute("aria-pressed", b.dataset.v === d.split);
+    b.disabled = !allowed.includes(b.dataset.v);
+  });
+  document.querySelectorAll('[data-f="repeat"]').forEach(b =>
+    b.setAttribute("aria-pressed", b.dataset.v === (d.repeat === "once" ? "once" : "every")));
+  const lab = q('[data-f="repeat"][data-v="once"]'), lab2 = q('[data-f="repeat"][data-v="every"]');
+  if (lab)  lab.textContent  = REPEAT_LABEL[d.period][0];
+  if (lab2) lab2.textContent = REPEAT_LABEL[d.period][1];
+  const grp = q(".chips.big2");
+  if (grp) grp.classList.toggle("ask", !!d._askRepeat);
+  const lbl = q(".chips.big2");
+  if (lbl) {
+    const note = lbl.parentElement.querySelector(".note");
+    if (d._askRepeat && !note) {
+      const n = document.createElement("span");
+      n.className = "note"; n.style.color = "var(--brass)";
+      n.textContent = "ما عرفت من كلامك — اختر واحدة.";
+      lbl.parentElement.appendChild(n);
+    } else if (!d._askRepeat && note) note.remove();
+    const head = lbl.parentElement.querySelector("label");
+    if (head) head.textContent = REPEAT_LABEL[d.period][0].replace(" فقط", "") + " أم متكرّرة؟";
+  }
+  const box = q(".preview");
+  if (box) box.innerHTML = previewInner(d);
+  const rc = q(".read");
+  if (rc && d._read) rc.outerHTML = readCard(d._read);
+}
+
 function saveForm() {
   const d = draft;
   d.title = (d.title || "").trim() || "مهمة بلا عنوان";
   d.unit  = (d.unit  || "").trim() || "وحدة";
   d.target = Math.max(0, Number(d.target) || 0);
   const dw = dayws(d);
+  const rep = d.repeat === "once" ? "once" : "every";
   const clean = { id:d.id, title:d.title, unit:d.unit, target:d.target, period:d.period,
                   split:d.split, dayw:dw, rest:dw.map((w,i)=>w===0?i:-1).filter(i=>i>=0),
                   curve:d.curve || "even", catchup:d.catchup, color:d.color,
+                  repeat:rep,
+                  anchor:rep === "once" ? periodKey(d.period, today()) : null,
                   created:d.created, archived:false };
   const i = S.tasks.findIndex(t => t.id === d.id);
   if (i >= 0) S.tasks[i] = clean; else S.tasks.push(clean);
@@ -2782,7 +2893,7 @@ function renderNav() {
   if (g) g.setAttribute("aria-current", view === "set");
 }
 
-const VERSION_TXT = "v10";
+const VERSION_TXT = "v11";
 const WEEK_STARTS = [[0, "الأحد"], [1, "الاثنين"], [6, "السبت"]];
 const THEMES = [["dark", "داكن"], ["light", "فاتح"], ["auto", "حسب النظام"]];
 
@@ -3079,6 +3190,7 @@ document.addEventListener("click", e => {
   if (f === "period") { draft.period = v; draft.split = bestSplit(v); }
   else if (f === "split") draft.split = v;
   else if (f === "color") draft.color = v;
+  else if (f === "repeat") { draft.repeat = v; draft._askRepeat = false; }
   else if (f === "curve") draft.curve = v;
   else if (f === "dayw") {
     const n = Number(v), arr = dayws(draft).slice();
@@ -3090,6 +3202,20 @@ document.addEventListener("click", e => {
 });
 
 document.addEventListener("input", e => {
+  /* الجملة داخل اللوح: تُحلَّل مع كل حرف وتملأ الحقول بلا إعادة رسم للحقل نفسه */
+  if (e.target.id === "f-say" && draft) {
+    const txt = e.target.value.trim();
+    if (txt) {
+      const r = fehm(txt);
+      Object.assign(draft, { title:r.title, unit:r.unit, target:r.target, period:r.period,
+                             split:r.split, rest:r.rest, dayw:null,
+                             repeat:r.repeat || draft.repeat, _read:r, _askRepeat:r.askRepeat });
+      draft.dayw = [0,1,2,3,4,5,6].map(i => (r.rest.includes(i) ? 0 : 1));
+      syncSheet();
+    }
+    return;
+  }
+
   /* نصوص التأمل: تُحفظ في المسودة بلا إعادة رسم حتى لا تنقطع الكتابة */
   const r = e.target.dataset && e.target.dataset.r;
   if (r) { reflDraft = reflCurrent(); reflDraft[r] = e.target.value; return; }
