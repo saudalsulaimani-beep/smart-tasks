@@ -664,6 +664,40 @@ button.tile:active{transform:scale(.975)}
   font-size:11.5px;font-weight:700;color:var(--text-3);transition:all .16s;
 }
 .tt-more:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+/* ---- المربّع العريض: للمهام ذات البنية (أسبوعية/شهرية فأكثر) ---- */
+.wtile{padding:18px}
+.wtile::before{display:none}   /* المربّع العريض مكتظ بالمحتوى، فلا حاجة للقوس */
+.wt-head{display:flex;align-items:flex-start;gap:10px;position:relative;z-index:1}
+.wt-id{flex:1;min-width:0}
+.wt-title{font-family:var(--font-display);font-weight:800;font-size:16px;line-height:1.35;letter-spacing:-.015em}
+.wt-when{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11.5px;color:var(--text-3);margin-top:6px;line-height:1.7}
+.wt-when .sep{width:3px;height:3px;border-radius:50%;background:var(--text-3);opacity:.6}
+.wt-when b{color:var(--tc);font-weight:800}
+.wt-nums{display:grid;grid-template-columns:repeat(4,1fr);margin:16px 0 14px;position:relative;z-index:1}
+.wt-n{text-align:center;position:relative;padding:0 4px}
+.wt-n + .wt-n::before{content:"";position:absolute;inset-inline-start:0;top:14%;height:72%;width:1px;background:var(--line)}
+.wt-n b{display:block;font-family:var(--font-num);font-weight:800;font-size:22px;letter-spacing:-.04em;line-height:1}
+.wt-n span{display:block;font-size:10px;color:var(--text-3);margin-top:6px}
+.wt-n.key b{color:var(--tc);font-size:27px}
+.wt-n.now b{color:var(--brass)}
+.wt-n.ok b{color:var(--ok)}
+.wt-bar{position:relative;height:7px;border-radius:99px;background:var(--surface-3);margin-bottom:6px}
+.wt-bar i{display:block;height:100%;border-radius:99px;background:var(--tc);transition:width .55s cubic-bezier(.2,.8,.2,1)}
+.wt-bar .pace{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:2px;background:var(--brass)}
+.wt-legend{display:flex;justify-content:space-between;gap:10px;font-size:10.5px;color:var(--text-3)}
+.wt-strip{margin-top:15px}
+.wt-strip .t-k{margin-bottom:9px}
+.wt-more{
+  margin-top:14px;padding:11px;border-radius:12px;width:100%;
+  background:var(--surface-2);border:1px solid var(--line);
+  font-size:12px;font-weight:700;color:var(--text-3);transition:all .16s;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+}
+.wt-more:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.wt-more svg{transition:transform .25s}
+.wt-more[aria-expanded="true"] svg{transform:rotate(180deg)}
+@media (max-width:400px){ .wt-n b{font-size:19px} .wt-n.key b{font-size:23px} .wt-n span{font-size:9px} }
+
 .tt-act{display:flex;gap:7px;margin-top:11px}
 .tt-btn{
   flex:1;height:36px;border-radius:11px;display:grid;place-items:center;
@@ -2353,56 +2387,90 @@ function renderTasks() {
     const open = expanded.has(task.id);
     const band = gran ? makeGroups(c.slots, gran) : c.slots;
     const expired = taskExpired(task);
+    const todayShare = c.cur ? c.cur.todo : 0;
+    const icons = `
+      <span class="tt-icons">
+        <button class="ibtn" data-act="edit" data-task="${task.id}" aria-label="تعديل">${icon("edit", 14)}</button>
+        <button class="ibtn danger" data-act="del" data-task="${task.id}" aria-label="حذف">${icon("trash", 14)}</button>
+      </span>`;
 
-    const tile = `
-    <article class="ttile b2 ${c.remaining === 0 ? "done" : ""} ${expired ? "idle" : ""}"
+    /* المهمة البسيطة (يومية أو بلا تقسيم) يكفيها مربّع صغير */
+    if (c.slots.length <= 1) {
+      return `
+      <article class="ttile b2 ${c.remaining === 0 ? "done" : ""} ${expired ? "idle" : ""}"
+               style="--tc:${colorVar(task.color)}">
+        <div class="tt-top"><span class="tt-dot"></span>
+          <span class="tt-per">${repShort(task)}</span>${icons}</div>
+        <h3 class="tt-title">${esc(task.title)}</h3>
+        <div class="tt-big">
+          <b>${fmt(c.remaining)}</b>
+          <span>${esc(task.unit)}<br>من ${fmt(c.target)}</span>
+        </div>
+        <div class="tt-line"><i style="width:${(c.pct * 100).toFixed(1)}%"></i></div>
+        <div class="tt-foot">${expired ? "انتهت — مرة واحدة" : PERIODS[task.period].label}</div>
+      </article>`;
+    }
+
+    /* المهمة ذات البنية: مربّع عريض يشرح الفترة والإيقاع والتوزيع */
+    const detail = !open || !gran ? "" :
+      `<div class="grp" style="margin-top:14px">` + makeGroups(c.slots, gran).map(g => `
+        <div class="grp-row ${g.now ? "now" : ""}">
+          <div>
+            <div class="grp-name">${gran === "week"
+              ? `أسبوع ${rangeHtml(g.start, g.end)} ${MONTHS[g.end.getMonth()]}`
+              : `${MONTHS[g.start.getMonth()]}`}</div>
+            <div class="grp-sub">مطلوب ${fmt(g.todo)} · أنجزت ${fmt(g.done)}</div>
+          </div>
+          <div class="dist-scroll">${meter(c, g.slots, { clickable: true })}</div>
+        </div>`).join("") + `</div>`;
+
+    return `
+    <article class="ttile wtile b4 ${c.remaining === 0 ? "done" : ""} ${expired ? "idle" : ""}"
              style="--tc:${colorVar(task.color)}">
-      <div class="tt-top">
-        <span class="tt-dot"></span>
-        <span class="tt-per">${repShort(task)}</span>
-        <span class="tt-icons">
-          <button class="ibtn" data-act="edit" data-task="${task.id}" aria-label="تعديل">${icon("edit", 14)}</button>
-          <button class="ibtn danger" data-act="del" data-task="${task.id}" aria-label="حذف">${icon("trash", 14)}</button>
-        </span>
+      <div class="wt-head">
+        <div class="wt-id">
+          <h3 class="wt-title">${esc(task.title)}</h3>
+          <div class="wt-when">
+            <span>${repShort(task)}</span><span class="sep"></span>
+            <b>${esc(periodTitle(task.period, today()))}</b><span class="sep"></span>
+            <span>${SPLITS[task.split].label}</span>
+            ${task.rest && task.rest.length ? `<span class="sep"></span>
+              <span>راحة ${task.rest.map(d => DAY_SHORT[d].slice(0, 3)).join("، ")}</span>` : ""}
+          </div>
+        </div>
+        ${icons}
       </div>
-      <h3 class="tt-title">${esc(task.title)}</h3>
-      <div class="tt-big">
-        <b>${fmt(c.remaining)}</b>
-        <span>${esc(task.unit)}<br>من ${fmt(c.target)}</span>
+
+      <div class="wt-nums">
+        <div class="wt-n key"><b>${fmt(c.remaining)}</b><span>باقٍ ${esc(task.unit)}</span></div>
+        <div class="wt-n ok"><b>${fmt(c.doneTotal)}</b><span>أنجزت</span></div>
+        <div class="wt-n now"><b>${expired ? "—" : fmt(todayShare)}</b><span>نصيب اليوم</span></div>
+        <div class="wt-n"><b>${c.daysLeft}</b><span>يوم متبقٍ</span></div>
       </div>
-      <div class="tt-line"><i style="width:${(c.pct * 100).toFixed(1)}%"></i></div>
-      <div class="tt-foot">
-        ${expired ? "انتهت — مرة واحدة"
-          : c.daysLeft > 0 ? `${c.daysLeft} يوم · ≈ ${fmt(avg)} ${SPLITS[task.split].each}`
-          : "انتهت الفترة"}
+
+      <div class="wt-bar">
+        <i style="width:${(c.pct * 100).toFixed(1)}%"></i>
+        ${c.pacePct > 0 && c.pacePct < 1
+          ? `<span class="pace" style="inset-inline-start:${(c.pacePct * 100).toFixed(1)}%"
+                   title="المفترض إنجازه قبل اليوم"></span>` : ""}
       </div>
-      ${c.slots.length > 1 ? `<button class="tt-more" data-act="expand" data-task="${task.id}"
-        aria-expanded="${open}">${open ? "إخفاء التوزيع" : "شوف التوزيع"}</button>` : ""}
-    </article>`;
+      <div class="wt-legend">
+        <span>${Math.round(c.pct * 100)}% من ${fmt(c.target)}</span>
+        <span>${expired ? "انتهت الفترة" : stt.txt} · ≈ ${fmt(avg)} ${SPLITS[task.split].each}</span>
+      </div>
 
-    if (!open || c.slots.length <= 1) return tile;
+      <div class="wt-strip">
+        <div class="t-k">${gran === "week" ? "أسابيع الفترة" : gran === "month" ? "أشهر الفترة" : "أيام الأسبوع"}</div>
+        <div class="dist-scroll">${meter(c, band, { clickable: !gran })}</div>
+      </div>
 
-    const detail = gran
-      ? `<div class="grp">` + makeGroups(c.slots, gran).map(g => `
-          <div class="grp-row ${g.now ? "now" : ""}">
-            <div>
-              <div class="grp-name">${gran === "week"
-                ? `أسبوع ${rangeHtml(g.start, g.end)} ${MONTHS[g.end.getMonth()]}`
-                : `${MONTHS[g.start.getMonth()]}`}</div>
-              <div class="grp-sub">مطلوب ${fmt(g.todo)} · أنجزت ${fmt(g.done)}</div>
-            </div>
-            <div class="dist-scroll">${meter(c, g.slots, { clickable: true })}</div>
-          </div>`).join("") + `</div>`
-      : `<div class="dist-scroll">${meter(c, c.slots, { clickable: true })}</div>`;
-
-    return tile + `
-    <div class="tile b4" style="--tc:${colorVar(task.color)}">
-      <div class="t-k" style="margin-bottom:13px">توزيع «${esc(task.title)}»</div>
+      <button class="wt-more" data-act="expand" data-task="${task.id}" aria-expanded="${open}">
+        ${open ? "إخفاء التفصيل اليومي" : "التفصيل اليومي"}
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
       ${detail}
-      <div class="tt-foot" style="margin-top:13px">
-        الرقم داخل الخانة = المطلوب بعد إعادة التوزيع · اضغط أي خانة لتسجّل إنجازها
-      </div>
-    </div>`;
+    </article>`;
   }).join("");
 
   return `<div class="bento">${cards}</div>`;
@@ -3017,7 +3085,7 @@ function renderNav() {
   if (g) g.setAttribute("aria-current", view === "set");
 }
 
-const VERSION_TXT = "v12";
+const VERSION_TXT = "v13";
 const WEEK_STARTS = [[0, "الأحد"], [1, "الاثنين"], [6, "السبت"]];
 const THEMES = [["dark", "داكن"], ["light", "فاتح"], ["auto", "حسب النظام"]];
 
