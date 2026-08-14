@@ -10,9 +10,9 @@ import math, os, struct, zlib
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "icons")
 
-TOP    = (0x2D, 0xD4, 0xBF)   # gradient start
-BOTTOM = (0x0E, 0x76, 0x6B)   # gradient end
-INK    = (0x06, 0x24, 0x22)   # the mark
+TOP    = (0x6E, 0x6C, 0xE8)   # gradient start
+BOTTOM = (0x48, 0x46, 0xC4)   # gradient end
+INK    = (0xFF, 0xFF, 0xFF)   # the mark
 
 
 def lerp(a, b, t):
